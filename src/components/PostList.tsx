@@ -1,0 +1,58 @@
+import React, { useEffect, useState } from "react";
+import { createPost, getPosts } from "../api/postApi";
+import type { Post } from "../types/Post";
+
+const PostList: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 1. 컴포넌트 마운트 시 게시글 목록 조회
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await getPosts();
+        setPosts(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  // 2. 새로운 게시글 생성
+  const handleCreatePost = async () => {
+    const newPostData = {
+      title: "새로운 React 생성 글",
+      content: "프론트엔드에서 성공적으로 백엔드에 전송되었습니다!",
+    };
+    try {
+      const createdPost = await createPost(newPostData);
+      setPosts((prevPosts) => [...prevPosts, createdPost]);
+      alert(`게시글 생성 성공! ID: ${createdPost.id}`);
+    } catch (err) {
+      alert(`게시글 생성 실패: ` + (err as Error).message);
+    }
+  };
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>에러 발생: {error} </div>;
+
+  return (
+    <div>
+      <h1>게시글 목록 ({posts.length}개)</h1>
+      <button onClick={handleCreatePost}>새 게시글 등록</button>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>
+            <strong>{post.title}</strong>: {post.content} (ID: {post.id})
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default PostList;
