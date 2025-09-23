@@ -41,13 +41,22 @@ const PostList: React.FC = () => {
   if (error) return <div>에러 발생: {error} </div>;
 
   return (
-    <div>
-      <h1>게시글 목록 ({posts.length}개)</h1>
-      <button onClick={handleCreatePost}>새 게시글 등록</button>
-      <ul>
+    <div className="container mx-auto p-4 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-4">
+        게시글 목록 ({posts.length}개)
+      </h1>
+      <button
+        onClick={handleCreatePost}
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600 transition-colors"
+      >
+        새 게시글 등록
+      </button>
+      <ul className="space-y-4">
         {posts.map((post) => (
-          <li key={post.id}>
-            <strong>{post.title}</strong>: {post.content} (ID: {post.id})
+          <li key={post.id} className="bg-white p-4 rounded shadow">
+            <h2 className="text-xl font-semibold">{post.title}</h2>
+            <p className="text-gray-600 mt-2">{post.content}</p>
+            <p className="text-sm text-gray-600 mt-2">ID: {post.id}</p>
           </li>
         ))}
       </ul>
