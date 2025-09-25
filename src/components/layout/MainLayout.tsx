@@ -2,6 +2,7 @@ import {
   DarkThemeToggle,
   Footer,
   FooterCopyright,
+  FooterIcon,
   Navbar,
   NavbarBrand,
   NavbarCollapse,
@@ -9,6 +10,9 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import React from "react";
+import { FaEnvelope, FaInstagram } from "react-icons/fa";
+import { FaBluesky, FaX } from "react-icons/fa6";
+import { HiHome } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import SearchInput from "../ui/SearchInput";
 
@@ -23,9 +27,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Navbar fluid rounded>
         <div className="flex items-center gap-4">
           <Link to="/">
-            <NavbarBrand>
+            <NavbarBrand className="gap-2">
+              <HiHome className="h-6 w-6" />
               <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                SW Blog
+                SWLog
               </span>
             </NavbarBrand>
           </Link>
@@ -33,15 +38,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
 
         <NavbarToggle />
-        <NavbarCollapse className="flex flex-col items-center">
-          <SearchInput />
-          <Link to="/posts">
-            <NavbarLink>게시글</NavbarLink>
-          </Link>
-          <Link to="#">
-            {/* TODO: 태그마다 달려있는 className 정리방안 */}
-            <NavbarLink>소개</NavbarLink>
-          </Link>
+        <NavbarCollapse>
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <SearchInput />
+            <Link to="/posts">
+              <NavbarLink>게시글</NavbarLink>
+            </Link>
+            <Link to="/about">
+              {/* TODO: 태그마다 달려있는 className 정리방안 */}
+              <NavbarLink>소개</NavbarLink>
+            </Link>
+          </div>
         </NavbarCollapse>
       </Navbar>
 
@@ -52,7 +59,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       {/* 하단 푸터 */}
       <Footer container>
-        <FooterCopyright href="#" by="SW" year={2025} />
+        <div className="w-full text-center">
+          <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
+            <FooterCopyright href="#" by="SW" year={2025} />
+            <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+              <FooterIcon
+                href="https://www.instagram.com/reincarnated90/"
+                icon={FaInstagram}
+              />
+              <FooterIcon href="https://x.com/Reincarnate90" icon={FaX} />
+              <FooterIcon
+                href="https://bsky.app/profile/reencarnacion.bsky.social"
+                icon={FaBluesky}
+              />
+              <FooterIcon href="mailto:thearch90@gmail.com" icon={FaEnvelope} />
+            </div>
+          </div>
+        </div>
       </Footer>
     </div>
   );
