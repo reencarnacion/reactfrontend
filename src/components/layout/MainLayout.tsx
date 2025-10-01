@@ -53,8 +53,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </Navbar>
 
       {/* 페이지 콘텐츠 영역 */}
-      <main className="flex-grow container mx-auto p-4 max-w-7xl">
-        {children}
+      <main className="flex flex-grow overflow-hidden">
+        <div className="flex-grow overflow-y-auto p-6 bg-white dark:bg-gray-900">
+          {children}
+        </div>
       </main>
 
       {/* 하단 푸터 */}

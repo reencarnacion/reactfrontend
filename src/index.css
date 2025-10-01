@@ -2,3 +2,16 @@
 @plugin "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
 @custom-variant dark (&:where(.dark, .dark *));
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+@theme {
+  --font-sans: "Noto Sans KR", "Noto Sans JP", "Noto Sans SC", "Noto Sans TC",
+    "Noto Sans", sans-serif;
+}
