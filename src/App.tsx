@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 import AboutPage from "./pages/AboutPage";
 import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
 import PostList from "./pages/PostList";
 import PostWritePage from "./pages/PostWritePage";
 
@@ -16,6 +17,7 @@ function App() {
           <Route path="/posts" element={<PostList />} />
           <Route path="/posts/write" element={<PostWritePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<h1>404 - 페이지를 찾을 수 없습니다.</h1>} />
         </Routes>
       </MainLayout>

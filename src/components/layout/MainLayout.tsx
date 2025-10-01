@@ -1,5 +1,8 @@
 import {
   DarkThemeToggle,
+  Dropdown,
+  DropdownHeader,
+  DropdownItem,
   Footer,
   FooterCopyright,
   FooterIcon,
@@ -12,7 +15,7 @@ import {
 import React from "react";
 import { FaEnvelope, FaInstagram } from "react-icons/fa";
 import { FaBluesky, FaX } from "react-icons/fa6";
-import { HiHome } from "react-icons/hi";
+import { HiHome, HiUserCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import SearchInput from "../ui/SearchInput";
 
@@ -50,6 +53,34 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </Link>
           </div>
         </NavbarCollapse>
+
+        <div>
+          <Dropdown
+            label={<HiUserCircle className="w-6 h-6" />}
+            arrowIcon={false}
+            inline
+          >
+            <DropdownHeader>
+              <span className="block text-sm">게스트</span>
+              <span className="block truncate text-sm font-medium">
+                로그인이 필요합니다
+              </span>
+            </DropdownHeader>
+            <DropdownItem>
+              <Link to="/login" className="block w-full text-left">
+                로그인
+              </Link>
+            </DropdownItem>
+            <DropdownItem>
+              <Link to="setting" className="block w-full text-left">
+                설정
+              </Link>
+            </DropdownItem>
+          </Dropdown>
+
+          {/* 모바일 메뉴 토글? */}
+          <NavbarToggle />
+        </div>
       </Navbar>
 
       {/* 페이지 콘텐츠 영역 */}
