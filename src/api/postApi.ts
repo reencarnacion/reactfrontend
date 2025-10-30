@@ -4,7 +4,7 @@ import type { CreatePostRequest, Post } from "../types/Post";
 
 // 1. 기본 인스턴스 설정
 const api = axios.create({
-  baseURL: "/api/post",
+  baseURL: "/api/posts",
   timeout: 5000,
 });
 

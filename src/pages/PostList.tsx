@@ -1,7 +1,7 @@
 import { Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPosts } from "../api/postApi";
+import { getPosts } from "../api/PostApi";
 import type { Post } from "../types/Post";
 
 const PostList: React.FC = () => {
