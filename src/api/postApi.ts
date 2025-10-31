@@ -1,6 +1,7 @@
 import axios from "axios";
 // Linter 권장: type으로 선언
 import type { CreatePostRequest, Post } from "../types/Post";
+import apiClient from "./ApiClient";
 
 // 1. 기본 인스턴스 설정
 const api = axios.create({
@@ -27,7 +28,11 @@ export const createPost = async (
 ): Promise<Post> => {
   try {
     // POST localhost:5173/api/post
-    const response = await api.post<Post>("", postData);
+    // const response = await api.post<Post>("", postData);
+
+    // 인증 필요 요청에 헤더 토큰 추가
+    const response = await apiClient.post("/posts", postData);
+
     return response.data;
   } catch (error) {
     console.error("게시글 생성 실패: ", error);
