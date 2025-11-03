@@ -5,7 +5,9 @@ import { Button, Label, TextInput } from "flowbite-react";
 import React, { useState } from "react";
 import { FaBold, FaItalic, FaListUl, FaTextHeight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { createPost } from "../api/PostApi";
 
+// 에디터
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
     return null;
@@ -85,6 +87,22 @@ const PostWritePage: React.FC = () => {
     },
   });
 
+  // FIXME: 테스트 함수
+  const handleTest = async () => {
+    if (!editor) return;
+
+    const newPost = {
+      title: "테스트 글",
+      content: "프론트엔드 등록페이지 테스트중",
+    };
+    try {
+      const createdPost = await createPost(newPost);
+      alert(`게시글 작성완료 [${createdPost.id}]`);
+    } catch (err) {
+      alert(`게시글 테스트 에러 ` + (err as Error).message);
+    }
+  };
+
   const handleSubmit = () => {
     // 여기서 백엔드 전송 로직 구현
     if (!editor) return;
@@ -133,6 +151,9 @@ const PostWritePage: React.FC = () => {
         />
       </div>
       <div className="flex justify-end gap-2">
+        <Button onClick={handleTest} color="red">
+          글쓰기테스트
+        </Button>
         <Button onClick={handleCancel} color="alternative">
           취소
         </Button>

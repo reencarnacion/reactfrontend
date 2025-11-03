@@ -16,7 +16,8 @@ import React from "react";
 import { FaEnvelope, FaInstagram } from "react-icons/fa";
 import { FaBluesky, FaX } from "react-icons/fa6";
 import { HiHome, HiUserCircle } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import SearchInput from "../ui/SearchInput";
 
 interface MainLayoutProps {
@@ -24,6 +25,14 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // 갈 필요가 있을까?
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* 상단 헤더 */}
@@ -41,6 +50,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
 
         <NavbarToggle />
+
         <NavbarCollapse>
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <SearchInput />
@@ -60,17 +70,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             arrowIcon={false}
             inline
           >
-            <DropdownHeader>
-              <span className="block text-sm">게스트</span>
-              <span className="block truncate text-sm font-medium">
-                로그인이 필요합니다
-              </span>
-            </DropdownHeader>
-            <DropdownItem>
-              <Link to="/login" className="block w-full text-left">
-                로그인
-              </Link>
-            </DropdownItem>
+            {isAuthenticated ? (
+              <>
+                <DropdownHeader>
+                  <span className="block truncate text-sm font-medium">
+                    로그인되었습니다
+                  </span>
+                </DropdownHeader>
+                <DropdownItem onClick={handleLogout}>로그아웃</DropdownItem>
+              </>
+            ) : (
+              <>
+                <DropdownHeader>
+                  <span className="block text-sm">게스트</span>
+                  <span className="block truncate text-sm font-medium">
+                    로그인이 필요합니다
+                  </span>
+                </DropdownHeader>
+                <DropdownItem>
+                  <Link to="/login" className="block w-full text-left">
+                    로그인
+                  </Link>
+                </DropdownItem>
+              </>
+            )}
             <DropdownItem>
               <Link to="setting" className="block w-full text-left">
                 설정

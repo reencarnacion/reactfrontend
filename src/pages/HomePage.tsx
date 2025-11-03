@@ -24,7 +24,8 @@ const HomePage: React.FC = () => {
           SW 로그
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-          이것저것 하면서 기록합니다.
+          이것저것 하면서 기록합니다. 레이아웃은 일정 수준 개발되고 나면
+          참조자료 찾아서 수정할 예정..ㅠ
         </p>
         <Link className="underline" to="/posts">
           게시판은 여기

@@ -1,14 +1,14 @@
 import { Button, Card, Label, TextInput } from "flowbite-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "../api/AuthApi";
+import { useAuth } from "../hooks/useAuth";
 import type { LoginRequest } from "../types/Auth";
-
-const saveToken = (token: string) => {
-  localStorage.setItem("accessToken", token);
-};
 
 const LoginPage: React.FC = () => {
   // 파라미터로 타입 정의
+  const navigate = useNavigate();
+  const { login: contextLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,9 +24,13 @@ const LoginPage: React.FC = () => {
 
     try {
       const data = await login(credentials);
-      saveToken(data.accessToken);
-      alert("로그인 성공! 토큰이 저장되었습니다.");
-      // TODO: 페이지 이동 로직(홈페이지로)
+
+      // saveToken(data.accessToken);
+      contextLogin(data.accessToken);
+
+      // TODO: 화면 컴포넌트로 표시해주기 (토스트 등)
+      alert("로그인 완료");
+      navigate("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -61,14 +65,14 @@ const LoginPage: React.FC = () => {
           <div>
             <div className="mb-2 block">
               <Label htmlFor="password">비밀번호</Label>
-              <TextInput
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
             </div>
+            <TextInput
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           {error && (
