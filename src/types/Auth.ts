@@ -8,3 +8,12 @@ export interface TokenResponse {
   refreshToken: string;
   userId: number;
 }
+
+export interface AuthState {
+  isLoggedIn: boolean;
+  user: {
+    email: string;
+    role: "USER" | "ADMIN" | "GUEST";
+  } | null;
+  isLoading: boolean;
+}
