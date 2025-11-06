@@ -1,9 +1,10 @@
 import { createContext } from "react";
+import type { TokenResponse } from "../types/Auth";
 
 // Context 타입 정의
 export interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (authData: TokenResponse) => void;
   logout: () => void;
 }
 

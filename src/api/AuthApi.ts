@@ -1,14 +1,15 @@
 import axios from "axios";
-import type { LoginRequest, LoginResponse } from "../types/Auth";
+import type { LoginRequest, TokenResponse } from "../types/Auth";
+import apiClient from "./ApiClient";
 
-const BASE_PATH = "/api/auth/";
+const BASE_PATH = "/api/auth";
 
 export const login = async (
   credentials: LoginRequest
-): Promise<LoginResponse> => {
+): Promise<TokenResponse> => {
   try {
-    const response = await axios.post<LoginResponse>(
-      `${BASE_PATH}login`,
+    const response = await axios.post<TokenResponse>(
+      `${BASE_PATH}/login`,
       credentials
     );
     return response.data;
@@ -18,4 +19,20 @@ export const login = async (
     }
     throw new Error("서버와 통신할 수 없습니다.");
   }
+};
+
+export const refreshAccessToken = async (): Promise<TokenResponse> => {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (!refreshToken) {
+    throw new Error("Refresh token을 찾을 수 없습니다.");
+  }
+
+  const response = await apiClient.post<TokenResponse>("/auth/refresh", {
+    refreshToken,
+  });
+
+  localStorage.setItem("accessToken", response.data.accessToken);
+
+  return response.data;
 };

@@ -25,8 +25,7 @@ const LoginPage: React.FC = () => {
     try {
       const data = await login(credentials);
 
-      // saveToken(data.accessToken);
-      contextLogin(data.accessToken);
+      contextLogin(data);
 
       // TODO: 화면 컴포넌트로 표시해주기 (토스트 등)
       alert("로그인 완료");

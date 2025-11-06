@@ -1,7 +1,8 @@
 import { useCallback, useState, type ReactNode } from "react";
+import type { TokenResponse } from "../types/Auth";
 import { AuthContext } from "./AuthContextDefinition";
 
-// Provider 컴포넌트
+// Provider 컴포넌트: app.tsx에서 메인레이아웃 상위에 위치
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -10,14 +11,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   );
   // !! => 불리언 타입 명시적 변환
 
-  const login = useCallback((token: string) => {
-    localStorage.setItem("accessToken", token);
+  const login = useCallback((authData: TokenResponse) => {
+    localStorage.setItem("accessToken", authData.accessToken);
+    localStorage.setItem("refreshToken", authData.refreshToken);
+
     setIsAuthenticated(true);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
-    // TODO: 리프레쉬토큰 구현 시 그것도 제거
+    localStorage.removeItem("refreshToken");
+
     setIsAuthenticated(false);
   }, []);
 

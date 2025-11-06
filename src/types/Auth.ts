@@ -3,7 +3,8 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface LoginResponse {
+export interface TokenResponse {
   accessToken: string;
-  tokenType: "Bearer";
+  refreshToken: string;
+  userId: number;
 }
