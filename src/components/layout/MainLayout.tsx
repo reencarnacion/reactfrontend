@@ -38,6 +38,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* 상단 헤더 */}
       <Navbar fluid rounded>
         <div className="flex items-center gap-4">
+          {/* 제목/로고 영역 */}
           <Link to="/">
             <NavbarBrand className="gap-2">
               <HiHome className="h-6 w-6" />
@@ -46,25 +47,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </span>
             </NavbarBrand>
           </Link>
+          {/* 다크모드 토글 */}
           <DarkThemeToggle />
+          {/* 검색 */}
+          <div className="hidden md:block">
+            <SearchInput />
+          </div>
         </div>
 
-        <NavbarToggle />
-
-        <NavbarCollapse>
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <SearchInput />
-            <Link to="/posts">
-              <NavbarLink>게시글</NavbarLink>
-            </Link>
-            <Link to="/about">
-              {/* TODO: 태그마다 달려있는 className 정리방안 */}
-              <NavbarLink>소개</NavbarLink>
-            </Link>
-          </div>
-        </NavbarCollapse>
-
-        <div>
+        <div className="flex items-center md:order-2 gap-8">
+          {/* 메뉴 */}
+          <NavbarCollapse>
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-4">
+              <Link
+                to="/posts"
+                className="border-r border-gray-300 pr-4 dark:border-gray-600"
+              >
+                <NavbarLink>게시판</NavbarLink>
+              </Link>
+              <Link to="/about">
+                <NavbarLink>소개</NavbarLink>
+              </Link>
+            </div>
+          </NavbarCollapse>
+          {/* 인증 드롭다운 */}
           <Dropdown
             label={<HiUserCircle className="w-6 h-6" />}
             arrowIcon={false}
@@ -100,15 +106,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </Link>
             </DropdownItem>
           </Dropdown>
-
-          {/* 모바일 메뉴 토글? */}
+          {/* 모바일 메뉴 토글 */}
           <NavbarToggle />
         </div>
       </Navbar>
 
       {/* 페이지 콘텐츠 영역 */}
       <main className="flex flex-grow overflow-hidden">
-        <div className="flex-grow overflow-y-auto p-6 bg-white dark:bg-gray-900">
+        <div className="flex-grow overflow-y-auto p-4 bg-white dark:bg-gray-900">
           {children}
         </div>
       </main>
