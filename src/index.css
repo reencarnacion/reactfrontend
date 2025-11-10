@@ -3,15 +3,83 @@
 @source "../.flowbite-react/class-list.json";
 @custom-variant dark (&:where(.dark, .dark *));
 
-.tiptap p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
-}
-
 @theme {
   --font-sans: "Noto Sans KR", "Noto Sans JP", "Noto Sans SC", "Noto Sans TC",
     "Noto Sans", sans-serif;
 }
+
+/* React MD Editor 스타일 */
+.dark .mde-header {
+  background-color: #374151;
+  border-color: #374151;
+}
+
+.dark .mde-header button:hover {
+  background-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+
+.dark .mde-header .dropdown-toggle {
+  color: #d1d5db !important;
+}
+
+.dark .mde-editor button {
+  color: #d1d5db;
+}
+
+.mde-toggle-button {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 0.5rem !important;
+}
+
+.dark .mde-header .mde-toggle-button {
+  background-color: transparent !important;
+  color: #d1d5db !important;
+  border: 1px solid transparent !important;
+}
+
+.dark .mde-header .mde-toggle-button.selected {
+  background-color: #1d4ed8 !important;
+  color: #fff !important;
+  border-color: #1d4ed8 !important;
+  margin: 0 !important;
+}
+
+.dark .mde-header .mde-header-item.selected {
+  background-color: #374151 !important;
+}
+
+.dark .mde-header button.mde-toggle-button:focus,
+.dark .mde-header button.mde-toggle-button:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.dark .mde-header button.mde-toggle-button:hover {
+  background-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+
+.dark .mde-header button svg {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.dark .mde-text {
+  background-color: #1f2937 !important;
+  color: #fff !important;
+  border-color: #374151 !important;
+}
+.dark .mde-preview {
+  background-color: #1f2937 !important;
+  color: #fff !important;
+  border-color: #374151 !important;
+}
+
+.dark .react-mde {
+  border-color: #374151 !important;
+}
+
+/* React MD Editor 스타일 끝 */

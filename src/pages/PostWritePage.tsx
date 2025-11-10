@@ -1,96 +1,39 @@
-import PlaceHolder from "@tiptap/extension-placeholder";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Button, Label, TextInput } from "flowbite-react";
-import React, { useState } from "react";
-import { FaBold, FaItalic, FaListUl, FaTextHeight } from "react-icons/fa";
+import {
+  Button,
+  Card,
+  Label,
+  Select,
+  TextInput,
+  ToggleSwitch,
+} from "flowbite-react";
+import React, { useState, type FormEvent } from "react";
+import ReactMde from "react-mde";
+import type { Tab } from "react-mde/lib/definitions/types/Tab";
+import "react-mde/lib/styles/css/react-mde-all.css";
 import { useNavigate } from "react-router-dom";
+import * as Showdown from "showdown";
 import { createPost } from "../api/PostApi";
 
-// 에디터
-const MenuBar = ({ editor }: { editor: Editor | null }) => {
-  if (!editor) {
-    return null;
-  }
+const converter = new Showdown.Converter({
+  tables: true,
+  simplifiedAutoLink: true,
+  strikethrough: true,
+  tasklists: true,
+});
 
-  return (
-    <div className="border border-gray-300 dark:border-gray-700 mt-2 p-1 flex flex-wrap gap-1 rounded-t-lg bg-gray-50 dark:bg-gray-800">
-      <Button
-        size="xs"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        className={
-          editor.isActive("bold")
-            ? "bg-cyan-600"
-            : "bg-gray-400 dark:bg-gray-600"
-        }
-        tabIndex={-1}
-      >
-        <FaBold className="h-4 w-4" />
-      </Button>
-      <Button
-        size="xs"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={
-          editor.isActive("italic")
-            ? "bg-cyan-600"
-            : "bg-gray-400 dark:bg-gray-600"
-        }
-        tabIndex={-1}
-      >
-        <FaItalic className="h-4 w-4" />
-      </Button>
-      <Button
-        size="xs"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={
-          editor.isActive("bulletList")
-            ? "bg-cyan-600"
-            : "bg-gray-400 dark:bg-gray-600"
-        }
-        tabIndex={-1}
-      >
-        <FaListUl className="h-4 w-4" />
-      </Button>
-      <Button
-        size="xs"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={
-          editor.isActive("heading", { level: 1 })
-            ? "bg-cyan-600"
-            : "bg-gray-400 dark:bg-gray-600"
-        }
-        tabIndex={-1}
-      >
-        <FaTextHeight className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-};
+// TODO: 이미지 업로드 함수 구현
 
 const PostWritePage: React.FC = () => {
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("개발");
+  const [content, setContent] = useState("");
+  const [tags, setTags] = useState("");
+  const [selectedTab, setSelectedTab] = useState<Tab>("write");
+  const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      PlaceHolder.configure({
-        placeholder: "내용을 작성해주세요...",
-      }),
-    ],
-    content: "",
-    editorProps: {
-      attributes: {
-        class:
-          "prose dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4",
-      },
-    },
-  });
 
   // FIXME: 테스트 함수
   const handleTest = async () => {
-    if (!editor) return;
-
     const newPost = {
       title: "테스트 글",
       content: "프론트엔드 등록페이지 테스트중",
@@ -103,15 +46,15 @@ const PostWritePage: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // 여기서 백엔드 전송 로직 구현
-    if (!editor) return;
+  const handleContentChange = (value: string) => {
+    console.log(value);
+    setContent(value);
+  };
 
-    const htmlContent = editor.getHTML();
-
-    console.log(title);
-    console.log(htmlContent);
-    alert("작성 완료");
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    // 게시글 서버 전송 로직
+    console.log({ title, category, content, tags: tags.split(",") });
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,33 +66,116 @@ const PostWritePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">새 글 작성</h1>
-      <div className="mb-4">
-        <div className="mb-2 block">
-          <Label className="text-xl font-bold mb-6" htmlFor="title">
-            제목
-          </Label>
+    <div className="mx-auto max-w-7xl py-10 px-4">
+      <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+        새 글 작성
+      </h1>
+
+      <Card className="p-2 mb-4">
+        <div className="flex items-center gap-4">
+          <div className="w-24 shrink-0">
+            <Label htmlFor="title">제목</Label>
+          </div>
+          <div className="flex-1">
+            <TextInput
+              id="title"
+              type="text"
+              placeholder="게시글 제목을 입력하세요."
+              value={title}
+              onChange={handleTitleChange}
+              required
+            />
+          </div>
         </div>
-        <TextInput
-          id="title"
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-          required
-        />
-      </div>
-      <div className="mb-4 boder rounded-lg dark:border-gray-700 editor-container">
-        <Label htmlFor="editor" className="text-xl font-bold">
-          내용
-        </Label>
-        <MenuBar editor={editor} />
-        <EditorContent
-          id="editor"
-          editor={editor}
-          className="border border-gray-300 dark:border-gray-700 rounded-b-lg"
-        />
-      </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-24 shrink-0">
+              <Label htmlFor="category">카테고리</Label>
+            </div>
+            <div className="flex-1">
+              <Select
+                id="category"
+                required
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option>개발</option>
+                <option>외국어</option>
+                <option>독서</option>
+                <option>영상 시청</option>
+                <option>게임</option>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="w-24 shrink-0">
+              <Label htmlFor="isPrivate">비밀글 여부</Label>
+            </div>
+            <div className="flex-1 flex items-center">
+              <ToggleSwitch
+                id="isPrivate"
+                checked={isPrivate}
+                onChange={setIsPrivate}
+                label={isPrivate ? "비밀글 (Private)" : "공개글 (Public)"}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-30 shrink-0">
+            <Label htmlFor="tags">태그 (쉼표로 구분)</Label>
+          </div>
+          <div className="flex-1">
+            <TextInput
+              id="tags"
+              type="text"
+              placeholder="예: Spring Boot, JWT, 성능 최적화"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="content">본문 내용 (Markdown)</Label>
+          </div>
+          <ReactMde
+            value={"content"}
+            readOnly={false}
+            selectedTab={selectedTab}
+            onChange={handleContentChange}
+            onTabChange={setSelectedTab}
+            generateMarkdownPreview={(markdown) =>
+              Promise.resolve(converter.makeHtml(markdown))
+            }
+            toolbarCommands={[
+              ["header", "bold", "italic", "link", "image"],
+              ["unordered-list", "ordered-list", "quote"],
+            ]}
+            childProps={{
+              textArea: {
+                readOnly: false,
+              },
+              writeButton: {
+                tabIndex: -1,
+                children: "쓰기",
+                className: "mde-toggle-button",
+                style: { backgroundColor: "transparent" },
+              },
+              previewButton: {
+                tabIndex: -1,
+                children: "미리보기",
+                className: "mde-toggle-button",
+                style: { backgroundColor: "transparent" },
+              },
+            }}
+          />
+        </div>
+      </Card>
+
       <div className="flex justify-end gap-2">
         <Button onClick={handleTest} color="red">
           글쓰기테스트
