@@ -1,3 +1,5 @@
+import type { Options } from "easymde";
+import "easymde/dist/easymde.min.css";
 import {
   Button,
   Card,
@@ -6,20 +8,10 @@ import {
   TextInput,
   ToggleSwitch,
 } from "flowbite-react";
-import React, { useState, type FormEvent } from "react";
-import ReactMde from "react-mde";
-import type { Tab } from "react-mde/lib/definitions/types/Tab";
-import "react-mde/lib/styles/css/react-mde-all.css";
+import React, { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Showdown from "showdown";
+import SimpleMdeEditor from "react-simplemde-editor";
 import { createPost } from "../api/PostApi";
-
-const converter = new Showdown.Converter({
-  tables: true,
-  simplifiedAutoLink: true,
-  strikethrough: true,
-  tasklists: true,
-});
 
 // TODO: 이미지 업로드 함수 구현
 
@@ -28,7 +20,6 @@ const PostWritePage: React.FC = () => {
   const [category, setCategory] = useState("개발");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
-  const [selectedTab, setSelectedTab] = useState<Tab>("write");
   const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
 
@@ -45,6 +36,34 @@ const PostWritePage: React.FC = () => {
       alert(`게시글 테스트 에러 ` + (err as Error).message);
     }
   };
+
+  const mdeOptions: Options = useMemo(() => {
+    return {
+      spellChecker: false,
+      status: false,
+      minHeight: "180px",
+      // 툴바 설정 (image 버튼 포함)
+      toolbar: [
+        "heading",
+        "bold",
+        "italic",
+        "link",
+        "image",
+        "|",
+        "unordered-list",
+        "ordered-list",
+        "quote",
+        "|",
+        "preview",
+        "side-by-side",
+        "fullscreen",
+      ],
+      // ⭐️ readOnly를 여기서 false로 명시 ⭐️
+      readOnly: false,
+      // 이미지를 위한 커스텀 함수 (다음 단계에서 완성)
+      // imageUploadFunction: uploadImageToServer,
+    };
+  }, []);
 
   const handleContentChange = (value: string) => {
     console.log(value);
@@ -140,39 +159,17 @@ const PostWritePage: React.FC = () => {
 
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="content">본문 내용 (Markdown)</Label>
+            <div className="mb-3">
+              <Label htmlFor="content">본문 내용 (Markdown)</Label>
+            </div>
+            <SimpleMdeEditor
+              value={content}
+              onChange={handleContentChange}
+              options={mdeOptions}
+              // ⭐️ 다크 모드 스타일링을 위한 클래스 ⭐️
+              className="markdown-editor-simplemde"
+            />
           </div>
-          <ReactMde
-            value={"content"}
-            readOnly={false}
-            selectedTab={selectedTab}
-            onChange={handleContentChange}
-            onTabChange={setSelectedTab}
-            generateMarkdownPreview={(markdown) =>
-              Promise.resolve(converter.makeHtml(markdown))
-            }
-            toolbarCommands={[
-              ["header", "bold", "italic", "link", "image"],
-              ["unordered-list", "ordered-list", "quote"],
-            ]}
-            childProps={{
-              textArea: {
-                readOnly: false,
-              },
-              writeButton: {
-                tabIndex: -1,
-                children: "쓰기",
-                className: "mde-toggle-button",
-                style: { backgroundColor: "transparent" },
-              },
-              previewButton: {
-                tabIndex: -1,
-                children: "미리보기",
-                className: "mde-toggle-button",
-                style: { backgroundColor: "transparent" },
-              },
-            }}
-          />
         </div>
       </Card>
 
