@@ -37,6 +37,7 @@ const PostWritePage: React.FC = () => {
     }
   };
 
+  // 에디터 옵션
   const mdeOptions: Options = useMemo(() => {
     return {
       spellChecker: false,
@@ -66,14 +67,28 @@ const PostWritePage: React.FC = () => {
   }, []);
 
   const handleContentChange = (value: string) => {
-    console.log(value);
     setContent(value);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     // 게시글 서버 전송 로직
-    console.log({ title, category, content, tags: tags.split(",") });
+    console.log({ title, category, content, tags: tags.split(","), isPrivate });
+
+    const newPost = {
+      title,
+      content,
+    };
+
+    try {
+      const createdPost = await createPost(newPost);
+
+      alert(`게시글 작성완료 [${createdPost.id}]`);
+      navigate("/posts");
+    } catch (err) {
+      alert(`게시글 테스트 에러 ` + (err as Error).message);
+    }
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
