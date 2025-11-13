@@ -11,3 +11,10 @@ export interface CreatePostRequest {
   title: string;
   content: string;
 }
+
+// Post CUD 응답 데이터 구조
+export interface PostResponse {
+  postId: number;
+  title: string;
+  message: string;
+}

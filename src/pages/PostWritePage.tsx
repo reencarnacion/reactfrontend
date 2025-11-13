@@ -12,6 +12,7 @@ import React, { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import SimpleMdeEditor from "react-simplemde-editor";
 import { createPost } from "../api/PostApi";
+import { handleError, handleSuccess } from "../utils/notifier";
 
 // TODO: 이미지 업로드 함수 구현
 
@@ -22,20 +23,6 @@ const PostWritePage: React.FC = () => {
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
-
-  // FIXME: 테스트 함수
-  const handleTest = async () => {
-    const newPost = {
-      title: "테스트 글",
-      content: "프론트엔드 등록페이지 테스트중",
-    };
-    try {
-      const createdPost = await createPost(newPost);
-      alert(`게시글 작성완료 [${createdPost.id}]`);
-    } catch (err) {
-      alert(`게시글 테스트 에러 ` + (err as Error).message);
-    }
-  };
 
   // 에디터 옵션
   const mdeOptions: Options = useMemo(() => {
@@ -79,15 +66,19 @@ const PostWritePage: React.FC = () => {
     const newPost = {
       title,
       content,
+      category,
+      isPrivate,
+      tags: tags.split(","),
     };
 
     try {
       const createdPost = await createPost(newPost);
 
-      alert(`게시글 작성완료 [${createdPost.id}]`);
-      navigate("/posts");
+      handleSuccess(`게시글 작성완료 [${createdPost.postId}]`, () =>
+        navigate("/posts")
+      );
     } catch (err) {
-      alert(`게시글 테스트 에러 ` + (err as Error).message);
+      handleError(err);
     }
   };
 
@@ -189,9 +180,6 @@ const PostWritePage: React.FC = () => {
       </Card>
 
       <div className="flex justify-end gap-2">
-        <Button onClick={handleTest} color="red">
-          글쓰기테스트
-        </Button>
         <Button onClick={handleCancel} color="alternative">
           취소
         </Button>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../api/AuthApi";
 import { useAuth } from "../hooks/useAuth";
 import type { LoginRequest } from "../types/Auth";
+import { handleSuccess } from "../utils/notifier";
 
 const LoginPage: React.FC = () => {
   // 파라미터로 타입 정의
@@ -27,9 +28,7 @@ const LoginPage: React.FC = () => {
 
       contextLogin(data);
 
-      // TODO: 화면 컴포넌트로 표시해주기 (토스트 등)
-      alert("로그인 완료");
-      navigate("/");
+      handleSuccess("로그인되었습니다.", () => navigate("/"));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

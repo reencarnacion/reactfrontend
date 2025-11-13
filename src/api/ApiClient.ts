@@ -1,5 +1,6 @@
 // JWT 토큰 전송 Axios 인터셉터
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import type { ProblemDetail, StandardizeError } from "../types/ProblemDetail";
 import { refreshAccessToken } from "./AuthApi";
 
 const MAX_RETRY_COUNT = 1;
@@ -24,6 +25,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   async (error: AxiosError) => {
+    // 실패
     return Promise.reject(error);
   }
 );
@@ -31,12 +33,15 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response) => {
+    // 성공
     return response;
   },
   async (error: AxiosError) => {
+    // 실패
     const originalRequest = error.config as AxiosRequestConfig & {
       _retryCount?: number;
     };
+
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (
@@ -45,6 +50,7 @@ apiClient.interceptors.response.use(
       (originalRequest._retryCount || 0) < MAX_RETRY_COUNT &&
       refreshToken
     ) {
+      // 401 - 토큰 리프레쉬
       originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
 
       try {
@@ -62,6 +68,28 @@ apiClient.interceptors.response.use(
 
         return Promise.reject(refreshError);
       }
+    } else if (error.response) {
+      const problemDetail: ProblemDetail = error.response.data as ProblemDetail;
+      const status = error.response.status;
+
+      if (!problemDetail.status || !problemDetail.detail) {
+        return Promise.reject(new Error("예상치 못한 오류 응답 구조입니다."));
+      }
+
+      const standardizedError: StandardizeError = new Error(
+        problemDetail.detail || `API 요청 실패 (Status: ${status})`
+      ) as StandardizeError;
+
+      standardizedError.status = status;
+      standardizedError.errors = problemDetail.errors;
+      standardizedError.title = problemDetail.title;
+
+      return Promise.reject(standardizedError);
+    } else {
+      const networkError: Error = new Error(
+        "네트워크 연결 또는 요청에 실패했습니다."
+      );
+      return Promise.reject(networkError);
     }
   }
 );
