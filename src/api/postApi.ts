@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { CreatePostRequest, Post, PostResponse } from "../types/Post";
+import type {
+  CreatePostRequest,
+  PostListResponse,
+  PostResponse,
+} from "../types/Post";
 import apiClient from "./ApiClient";
 
 // 1. 기본 인스턴스 설정
@@ -10,10 +14,10 @@ const api = axios.create({
 
 // 게시글 목록 조회
 // Promise<T> 를 통해 타입 안정성 확보 & 코드 가독성 향상
-export const getPosts = async (): Promise<Post[]> => {
+export const getPosts = async (): Promise<PostListResponse[]> => {
   try {
     // GET localhost:5173/api/post (Vite가 8080으로 프록시)
-    const response = await api.get<Post[]>("");
+    const response = await api.get<PostListResponse[]>("");
     return response.data;
   } catch (error) {
     console.error("게시글 목록 조회 실패: ", error);

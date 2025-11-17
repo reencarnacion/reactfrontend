@@ -10,34 +10,36 @@ import {
 } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { getPosts } from "../api/PostApi";
-import type { Post } from "../types/Post";
+import { getTags } from "../api/TagApi";
+import type { PostListResponse } from "../types/Post";
+import type { TagResponse } from "../types/Tag";
 
 const HomePage: React.FC = () => {
-  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
+  const [latestPosts, setLatestPosts] = useState<PostListResponse[]>([]);
+  const [allTags, setAllTags] = useState<TagResponse[]>([]);
 
   useEffect(() => {
+    // 최신 게시물 조회
     const fetchLatestPosts = async () => {
-      // TODO: 홈페이지용 API 추가해서 변경
+      // TODO: 홈페이지용 API 추가해서 변경: 최신 3개만 조회+전체 글 갯수
       const post = await getPosts();
-      setLatestPosts(post.slice(0, 3)); // 다 가져와서 3개쓰게 되어있음
+
+      setLatestPosts(post.slice(0, 3));
     };
     fetchLatestPosts();
+
+    // 게시글 태그 목록 조회
+    const fetchAllTags = async () => {
+      const tags = await getTags();
+
+      setAllTags(tags);
+    };
+    fetchAllTags();
   }, []);
 
   // 화면
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
-      {/* 블로그 소개 */}
-      {/* <section className="text-left mb-10">
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-          SW 로그
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-6"></p>
-        <Link className="underline" to="/posts">
-          게시판은 여기
-        </Link>
-      </section> */}
-
       {/* 메인 3열 그리드 컨테이너 */}
       <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-8">
         {/* 좌측 카드 영역 */}
@@ -48,8 +50,6 @@ const HomePage: React.FC = () => {
             </h5>
             <p className="text-sm font-normal text-gray-700 dark:text-gray-400">
               기록
-              <br />
-              레이아웃 수정중
             </p>
           </Card>
           <Card>
@@ -124,12 +124,11 @@ const HomePage: React.FC = () => {
 
           <div className="flex flex-col gap-4">
             {latestPosts.map((post) => (
-              <div key={post.id}>
+              <div key={post.postId}>
                 <div className="bg-transparent shadow-none border-0">
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex flex-wrap gap-2">
-                      {/* TODO: 게시글 해시태그 백엔드 개발 */}
-                      {["개발", "TBD"].map((tag) => (
+                      {post.tags.map((tag) => (
                         <Badge
                           color="blue"
                           className="px-2 py-1 text-xs font-medium rounded-md"
@@ -144,7 +143,7 @@ const HomePage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Link to={`/posts/${post.id}`}>
+                  <Link to={`/posts/${post.postId}`}>
                     <h5 className="text-xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white hover:underline">
                       {post.title}
                     </h5>
@@ -169,24 +168,13 @@ const HomePage: React.FC = () => {
             </h5>
             <div className="flex flex-wrap gap-2">
               {/* TODO: 게시물 해시태그 기능 */}
-              {[
-                "React",
-                "Typescript",
-                "Spring boot",
-                "JWT",
-                "日本語",
-                "中文",
-                "소설",
-                "역사",
-                "애니",
-                "RPG",
-              ].map((tag) => (
-                <a href={`/post?tag=${tag}`} key={tag}>
+              {allTags.map((tag) => (
+                <a href={`/post?tag=${tag.name}`} key={tag.tagId}>
                   <Badge
                     color="blue"
                     className="px-3 py-1 font-medium rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    #{tag}
+                    #{tag.name}
                   </Badge>
                 </a>
               ))}

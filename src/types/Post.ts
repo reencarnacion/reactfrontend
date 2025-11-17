@@ -18,3 +18,12 @@ export interface PostResponse {
   title: string;
   message: string;
 }
+
+export interface PostListResponse {
+  postId: number;
+  title: string;
+  content: string;
+  category: string;
+  createAt: string;
+  tags: string[];
+}
