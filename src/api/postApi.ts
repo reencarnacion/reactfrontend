@@ -6,18 +6,28 @@ import type {
 } from "../types/Post";
 import apiClient from "./ApiClient";
 
+const POSTS_PER_PAGE = 10;
+
 // 1. 기본 인스턴스 설정
 const api = axios.create({
-  baseURL: "/api/posts",
+  baseURL: "/api",
   timeout: 5000,
 });
 
 // 게시글 목록 조회
 // Promise<T> 를 통해 타입 안정성 확보 & 코드 가독성 향상
-export const getPosts = async (): Promise<PostListResponse[]> => {
+export const getPosts = async (
+  page: number = 0
+): Promise<PostListResponse[]> => {
   try {
     // GET localhost:5173/api/post (Vite가 8080으로 프록시)
-    const response = await api.get<PostListResponse[]>("");
+    const response = await api.get<PostListResponse[]>("/posts", {
+      params: {
+        page: page,
+        size: POSTS_PER_PAGE,
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error("게시글 목록 조회 실패: ", error);

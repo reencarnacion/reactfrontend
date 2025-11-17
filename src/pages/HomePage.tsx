@@ -1,16 +1,10 @@
-import { Badge, Card } from "flowbite-react";
+import { Card } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { FaGamepad } from "react-icons/fa";
-import {
-  HiArrowRight,
-  HiBookOpen,
-  HiCode,
-  HiPlay,
-  HiTranslate,
-} from "react-icons/hi";
-import { Link } from "react-router-dom";
 import { getPosts } from "../api/PostApi";
 import { getTags } from "../api/TagApi";
+import CategoryCard from "../components/ui/CategoryCard";
+import PostCard from "../components/ui/PostCard";
+import TagCard from "../components/ui/TagCard";
 import type { PostListResponse } from "../types/Post";
 import type { TagResponse } from "../types/Tag";
 
@@ -52,65 +46,7 @@ const HomePage: React.FC = () => {
               기록
             </p>
           </Card>
-          <Card>
-            <h5 className="text-xl font-bold tracking-normal text-gray-900 dark:text-white">
-              카테고리 바로가기
-            </h5>
-            <div className="flex flex-col gap-1">
-              <Link
-                to="/#"
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <HiCode className="w-5 h-5" />
-                  <span className="text-gray-900 dark:text-white">개발</span>
-                </div>
-                <HiArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/#"
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <HiTranslate className="w-5 h-5" />
-                  <span className="text-gray-900 dark:text-white">외국어</span>
-                </div>
-                <HiArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/#"
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <HiBookOpen className="w-5 h-5" />
-                  <span className="text-gray-900 dark:text-white">독서</span>
-                </div>
-                <HiArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/#"
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <HiPlay className="w-5 h-5" />
-                  <span className="text-gray-900 dark:text-white">
-                    영상 시청
-                  </span>
-                </div>
-                <HiArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/#"
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <FaGamepad className="w-5 h-5" />
-                  <span className="text-gray-900 dark:text-white">게임</span>
-                </div>
-                <HiArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </Card>
+          <CategoryCard />
         </aside>
 
         {/* 중앙 게시글 목록 영역 */}
@@ -125,36 +61,7 @@ const HomePage: React.FC = () => {
           <div className="flex flex-col gap-4">
             {latestPosts.map((post) => (
               <div key={post.postId}>
-                <div className="bg-transparent shadow-none border-0">
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <Badge
-                          color="blue"
-                          className="px-2 py-1 text-xs font-medium rounded-md"
-                          key={tag}
-                        >
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      1년 이상 경과
-                    </span>
-                  </div>
-
-                  <Link to={`/posts/${post.postId}`}>
-                    <h5 className="text-xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white hover:underline">
-                      {post.title}
-                    </h5>
-                  </Link>
-
-                  <p className="text-base font-normal tracking-tight text-gray-700 dark:text-gray-400">
-                    {post.content}
-                  </p>
-
-                  <hr className="mt-4 border-gray-200 dark:border-gray-700" />
-                </div>
+                <PostCard post={post} />
               </div>
             ))}
           </div>
@@ -162,24 +69,7 @@ const HomePage: React.FC = () => {
 
         {/* 우측 구분 영역 */}
         <aside className="md:col-span-1">
-          <Card>
-            <h5 className="text-xl font-bold tracking-normal text-gray-900 dark:text-white">
-              해시태그
-            </h5>
-            <div className="flex flex-wrap gap-2">
-              {/* TODO: 게시물 해시태그 기능 */}
-              {allTags.map((tag) => (
-                <a href={`/post?tag=${tag.name}`} key={tag.tagId}>
-                  <Badge
-                    color="blue"
-                    className="px-3 py-1 font-medium rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    #{tag.name}
-                  </Badge>
-                </a>
-              ))}
-            </div>
-          </Card>
+          <TagCard tags={allTags} />
         </aside>
       </div>
     </div>
