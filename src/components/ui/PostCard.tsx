@@ -1,6 +1,7 @@
 import { Badge } from "flowbite-react";
 import { Link } from "react-router-dom";
 import type { PostListResponse } from "../../types/Post";
+import { formatTimeAgo } from "../../utils/time";
 
 interface PostCardProps {
   post: PostListResponse;
@@ -22,17 +23,17 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           ))}
         </div>
         <span className="text-xs text-gray-500 dark:text-gray-400">
-          1년 이상 경과
+          {formatTimeAgo(post.createAt)}
         </span>
       </div>
 
       <Link to={`/posts/${post.postId}`}>
-        <h5 className="text-xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white hover:underline">
+        <h5 className="text-xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white hover:underline line-clamp-1">
           {post.title}
         </h5>
       </Link>
 
-      <p className="text-base font-normal tracking-tight text-gray-700 dark:text-gray-400">
+      <p className="text-base font-normal tracking-tight text-gray-700 dark:text-gray-400 line-clamp-1">
         {post.content}
       </p>
 

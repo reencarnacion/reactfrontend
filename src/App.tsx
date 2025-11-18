@@ -5,7 +5,7 @@ import { ToastProvider } from "./context/ToastProvider";
 import AboutPage from "./pages/AboutPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import PostList from "./pages/PostList";
+import PostList from "./pages/PostListPage";
 import PostWritePage from "./pages/PostWritePage";
 
 function App() {

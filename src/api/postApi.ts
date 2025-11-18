@@ -6,7 +6,7 @@ import type {
 } from "../types/Post";
 import apiClient from "./ApiClient";
 
-const POSTS_PER_PAGE = 10;
+const POSTS_PER_PAGE = 8;
 
 // 1. 기본 인스턴스 설정
 const api = axios.create({
