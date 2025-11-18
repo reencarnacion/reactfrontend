@@ -2,13 +2,13 @@ import { Button, Pagination } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiPencil } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { getPosts } from "../api/PostApi";
+import { getPosts, getPostsCount } from "../api/PostApi";
 import { getTags } from "../api/TagApi";
 import CategoryCard from "../components/ui/CategoryCard";
 import PostCard from "../components/ui/PostCard";
 import TagCard from "../components/ui/TagCard";
 import { useAuth } from "../hooks/useAuth";
-import type { PostListResponse } from "../types/Post";
+import type { PostListResponse, PostSearchCondition } from "../types/Post";
 import type { TagResponse } from "../types/Tag";
 import { handleError } from "../utils/notifier";
 
@@ -18,12 +18,29 @@ const PostListPage: React.FC = () => {
   const [allTags, setAllTags] = useState<TagResponse[]>([]);
   const [currentTitle, setCurrentTitle] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totlaElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchCondition, setSearchCondition] = useState<PostSearchCondition>(
+    {}
+  );
 
   // 게시글 목록 조회
-  const fetchPosts = async (cPage: number) => {
+  const fetchPosts = async (cPage: number, condition: PostSearchCondition) => {
     try {
-      const data = await getPosts(cPage - 1);
+      const data = await getPosts(cPage - 1, condition);
       setPosts(data);
+    } catch (err) {
+      handleError(err);
+    }
+  };
+
+  // 게시글 총 건수 조회
+  const fetchPostsCount = async (condition: PostSearchCondition) => {
+    try {
+      const count = await getPostsCount(condition);
+      console.log("총 게시글 수: ", count);
+      setTotalElements(count);
+      setTotalPages(Math.ceil(count / 8));
     } catch (err) {
       handleError(err);
     }
@@ -31,7 +48,8 @@ const PostListPage: React.FC = () => {
 
   // 1. 컴포넌트 마운트 초기 조회
   useEffect(() => {
-    fetchPosts(1);
+    fetchPostsCount(searchCondition);
+    fetchPosts(1, searchCondition);
 
     // 게시글 태그 목록 조회
     const fetchAllTags = async () => {
@@ -42,11 +60,11 @@ const PostListPage: React.FC = () => {
 
     // 게시판 구분 보여주기
     setCurrentTitle("전체 게시글 목록");
-  }, []);
+  }, [searchCondition]);
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
-    fetchPosts(page);
+    fetchPosts(page, searchCondition);
   };
 
   return (
@@ -81,9 +99,11 @@ const PostListPage: React.FC = () => {
           <div className="flex overflow-x-auto justify-center">
             <Pagination
               currentPage={currentPage}
-              totalPages={10}
+              totalPages={totalPages}
               onPageChange={onPageChange}
               showIcons
+              nextLabel="다음"
+              previousLabel="이전"
             />
           </div>
         </aside>

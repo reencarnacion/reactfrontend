@@ -27,3 +27,9 @@ export interface PostListResponse {
   createAt: string;
   tags: string[];
 }
+
+export interface PostSearchCondition {
+  tagName?: string;
+  category?: string;
+  keyword?: string;
+}
