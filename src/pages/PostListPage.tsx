@@ -1,7 +1,7 @@
 import { Button, Pagination } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { HiPencil } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { getPosts, getPostsCount } from "../api/PostApi";
 import { getTags } from "../api/TagApi";
 import CategoryCard from "../components/ui/CategoryCard";
@@ -18,11 +18,29 @@ const PostListPage: React.FC = () => {
   const [allTags, setAllTags] = useState<TagResponse[]>([]);
   const [currentTitle, setCurrentTitle] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totlaElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchCondition, setSearchCondition] = useState<PostSearchCondition>(
-    {}
-  );
+  const [searchParam] = useSearchParams();
+
+  const currentCondition: PostSearchCondition = useMemo(() => {
+    return {
+      tagName: searchParam.get("tagName") || undefined,
+      category: searchParam.get("category") || undefined,
+      keyword: searchParam.get("keyword") || undefined,
+    };
+  }, [searchParam]);
+
+  // 제목 설정
+  const updateTitle = (condition: PostSearchCondition) => {
+    if (condition.tagName) {
+      setCurrentTitle(`#${condition.tagName} 태그 게시글`);
+    } else if (condition.category) {
+      setCurrentTitle(`${condition.category} 게시글`);
+    } else if (condition.keyword) {
+      setCurrentTitle(`'${condition.keyword}' 검색 결과`);
+    } else {
+      setCurrentTitle("전체 게시글 목록");
+    }
+  };
 
   // 게시글 목록 조회
   const fetchPosts = async (cPage: number, condition: PostSearchCondition) => {
@@ -38,9 +56,8 @@ const PostListPage: React.FC = () => {
   const fetchPostsCount = async (condition: PostSearchCondition) => {
     try {
       const count = await getPostsCount(condition);
-      console.log("총 게시글 수: ", count);
-      setTotalElements(count);
-      setTotalPages(Math.ceil(count / 8));
+
+      setTotalPages(Math.max(1, Math.ceil(count / 8)));
     } catch (err) {
       handleError(err);
     }
@@ -48,8 +65,8 @@ const PostListPage: React.FC = () => {
 
   // 1. 컴포넌트 마운트 초기 조회
   useEffect(() => {
-    fetchPostsCount(searchCondition);
-    fetchPosts(1, searchCondition);
+    fetchPostsCount(currentCondition);
+    fetchPosts(1, currentCondition);
 
     // 게시글 태그 목록 조회
     const fetchAllTags = async () => {
@@ -59,12 +76,12 @@ const PostListPage: React.FC = () => {
     fetchAllTags();
 
     // 게시판 구분 보여주기
-    setCurrentTitle("전체 게시글 목록");
-  }, [searchCondition]);
+    updateTitle(currentCondition);
+  }, [currentCondition]);
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
-    fetchPosts(page, searchCondition);
+    fetchPosts(page, currentCondition);
   };
 
   return (

@@ -12,6 +12,12 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     <div className="bg-transparent shadow-none border-0">
       <div className="flex justify-between items-center mb-3">
         <div className="flex flex-wrap gap-2">
+          <Badge
+            color="info"
+            className="text-xs font-semibold uppercase px-3 py-1 mr-2"
+          >
+            {post.category}
+          </Badge>
           {post.tags.map((tag) => (
             <Badge
               color="blue"
