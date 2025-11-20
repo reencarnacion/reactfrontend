@@ -33,3 +33,12 @@ export interface PostSearchCondition {
   category?: string;
   keyword?: string;
 }
+
+export interface PostDetailResponse {
+  postId: number;
+  title: string;
+  content: string;
+  category: string;
+  createAt: string;
+  tags: string[];
+}

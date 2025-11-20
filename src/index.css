@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "flowbite-react/plugin/tailwindcss";
+@plugin "@tailwindcss/typography";
 @source "../.flowbite-react/class-list.json";
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -40,7 +41,8 @@
 
 .markdown-editor-simplemde .CodeMirror,
 .markdown-editor-simplemde .editor-preview {
-  font-size: var(--text-sm) !important; /* text-base */
+  font-size: var(--text-sm) !important;
+  font-family: var(--font-sans) !important; /* Tailwind CSS 폰트사용 */
 }
 
 .dark .CodeMirror-cursor {

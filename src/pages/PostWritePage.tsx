@@ -61,8 +61,6 @@ const PostWritePage: React.FC = () => {
     e.preventDefault();
 
     // 게시글 서버 전송 로직
-    console.log({ title, category, content, tags: tags.split(","), isPrivate });
-
     const newPost = {
       title,
       content,

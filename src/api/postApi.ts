@@ -1,6 +1,7 @@
 import axios from "axios";
 import type {
   CreatePostRequest,
+  PostDetailResponse,
   PostListResponse,
   PostResponse,
   PostSearchCondition,
@@ -53,7 +54,17 @@ export const getPosts = async (
   }
 };
 
-// TODO: 게시글 상세 조회
+// 게시글 상세 조회
+export const getPost = async (postId: number): Promise<PostDetailResponse> => {
+  try {
+    const response = await api.get<PostDetailResponse>(`/posts/${postId}`);
+
+    return response.data;
+  } catch (error) {
+    console.error("게시글 상세 조회 실패: ", error);
+    throw new Error("데이터를 불러오지 못했습니다.");
+  }
+};
 
 // 게시글 총 건수 조회
 export const getPostsCount = async (

@@ -5,6 +5,7 @@ import { ToastProvider } from "./context/ToastProvider";
 import AboutPage from "./pages/AboutPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import PostDetailPage from "./pages/PostDetailPage";
 import PostList from "./pages/PostListPage";
 import PostWritePage from "./pages/PostWritePage";
 
@@ -21,6 +22,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/posts" element={<PostList />} />
               <Route path="/posts/write" element={<PostWritePage />} />
+              <Route path="/posts/:postId" element={<PostDetailPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route
