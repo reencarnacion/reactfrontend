@@ -9,7 +9,16 @@
     "Noto Sans", sans-serif;
 }
 
-/* ⭐️ SimpleMDE/EasyMDE 다크 모드 스타일 오버라이드 ⭐️ */
+/* 목차 스크롤용 */
+h2,
+h3,
+h4,
+h5,
+h6 {
+  scroll-margin-top: 6rem; /* 헤더 높이만큼 여백 추가 */
+}
+
+/* SimpleMDE/EasyMDE 다크 모드 스타일 오버라이드 */
 .dark .markdown-editor-simplemde .editor-toolbar,
 .dark .markdown-editor-simplemde .editor-preview-full,
 .dark .markdown-editor-simplemde .CodeMirror {

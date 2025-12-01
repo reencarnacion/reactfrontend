@@ -8,12 +8,21 @@ import {
 } from "react-icons/hi";
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { getPost } from "../api/PostApi";
 import { useAuth } from "../hooks/useAuth";
 import type { PostDetailResponse } from "../types/Post";
 import { handleError } from "../utils/notifier";
 import { formatTimeAgo } from "../utils/time";
+
+interface TableOfContentsItem {
+  id: string;
+  text: string;
+  level: number;
+  depth?: string;
+}
 
 const PostDetailPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -22,9 +31,11 @@ const PostDetailPage: React.FC = () => {
   const [post, setPost] = useState<PostDetailResponse | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [toc, setToc] = useState<TableOfContentsItem[]>([]);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  // 최초 조회
   useEffect(() => {
     if (postIdNumber === null) return;
 
@@ -40,6 +51,39 @@ const PostDetailPage: React.FC = () => {
     };
 
     fetchPost();
+  }, [postIdNumber]);
+
+  // 게시글 조회 완료 후
+  useEffect(() => {
+    // 본문 제목 태그 목차 생성
+    const headings = document.querySelectorAll<HTMLHeadingElement>(
+      ".prose h2, .prose h3, .prose h4, .prose h5, .prose h6"
+    );
+    const tocItems: TableOfContentsItem[] = [];
+    const sectionNumbers: number[] = [0, 0, 0, 0, 0];
+
+    headings.forEach((heading) => {
+      if (!heading.id) return;
+
+      const index = parseInt(heading.tagName.substring(1), 10) - 2;
+      sectionNumbers[index] += 1;
+      for (let i = index + 1; i < sectionNumbers.length; i++) {
+        sectionNumbers[i] = 0;
+      }
+      const sectionNumber = sectionNumbers
+        .slice(0, index + 1)
+        .filter((num) => num > 0)
+        .join(".");
+
+      tocItems.push({
+        id: heading.id,
+        text: heading.innerText,
+        level: parseInt(heading.tagName.substring(1), 10),
+        depth: sectionNumber,
+      });
+    });
+
+    setToc(tocItems);
 
     // 스크롤 이벤트
     const handleScroll = () => {
@@ -52,11 +96,12 @@ const PostDetailPage: React.FC = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
+
     // 컴포넌트 언마운트 시 리스너 제거
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [postIdNumber]);
+  }, [post]);
 
   const handleGoback = () => {
     navigate(-1);
@@ -124,6 +169,10 @@ const PostDetailPage: React.FC = () => {
                 <ReactMarkdown
                   children={post.content}
                   remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[
+                    rehypeSlug,
+                    [rehypeAutolinkHeadings, { behavior: "wrap" }],
+                  ]}
                   components={{
                     code({ className, children, ...props }) {
                       return (
@@ -149,6 +198,7 @@ const PostDetailPage: React.FC = () => {
             </div>
 
             <aside className="lg:col-span-1 flex flex-col gap-4">
+              {/* 게시글 관리 영역 */}
               {isAuthenticated ? (
                 <Card>
                   <h6 className="text-lg font-bold tracking-normal text-gray-900 dark:text-white">
@@ -184,10 +234,36 @@ const PostDetailPage: React.FC = () => {
               ) : null}
 
               <Card>
-                <h3 className="text-lg font-semibold mb-3">탐색</h3>
-                관련 글 목록
-                <br />
-                마크다운 목차 등을 넣어줄 예정
+                <h3 className="text-lg font-semibold mb-3">목차</h3>
+                <ul className="space-y-2 mt-2">
+                  {toc.map((item) => (
+                    <li key={item.id}>
+                      <a
+                        href={`#${item.id}`}
+                        className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block transition-colors hover:underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const target = document.getElementById(item.id);
+
+                          if (target) {
+                            target.scrollIntoView({
+                              behavior: "smooth",
+                              block: "start",
+                            });
+                          }
+                        }}
+                      >
+                        <span className="font-semibold mr-1">{item.depth}</span>
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card>
+                <h3 className="text-lg font-semibold mb-3">시리즈 영역</h3>
+                <p>시리즈 기능은 현재 개발 중입니다.</p>
               </Card>
             </aside>
           </div>
