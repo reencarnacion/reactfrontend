@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
       // TODO: 홈페이지용 API 추가해서 변경: 최신 3개만 조회+전체 글 갯수
       const post = await getPosts();
 
-      setLatestPosts(post.slice(0, 3));
+      setLatestPosts(post.slice(0, 4));
     };
     fetchLatestPosts();
 

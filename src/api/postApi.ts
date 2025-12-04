@@ -1,4 +1,3 @@
-import axios from "axios";
 import type {
   CreatePostRequest,
   PostDetailResponse,
@@ -9,12 +8,6 @@ import type {
 import apiClient from "./ApiClient";
 
 const POSTS_PER_PAGE = 8;
-
-// 1. 기본 인스턴스 설정
-const api = axios.create({
-  baseURL: "/api",
-  timeout: 5000,
-});
 
 // 게시글 생성
 export const createPost = async (
@@ -39,7 +32,7 @@ export const getPosts = async (
 ): Promise<PostListResponse[]> => {
   try {
     // GET localhost:5173/api/post (Vite가 8080으로 프록시)
-    const response = await api.get<PostListResponse[]>("/posts", {
+    const response = await apiClient.get<PostListResponse[]>("/posts", {
       params: {
         page: page,
         size: POSTS_PER_PAGE,
@@ -57,7 +50,9 @@ export const getPosts = async (
 // 게시글 상세 조회
 export const getPost = async (postId: number): Promise<PostDetailResponse> => {
   try {
-    const response = await api.get<PostDetailResponse>(`/posts/${postId}`);
+    const response = await apiClient.get<PostDetailResponse>(
+      `/posts/${postId}`
+    );
 
     return response.data;
   } catch (error) {
@@ -71,7 +66,7 @@ export const getPostsCount = async (
   condition?: PostSearchCondition
 ): Promise<number> => {
   try {
-    const response = await api.get<number>("/posts/count", {
+    const response = await apiClient.get<number>("/posts/count", {
       params: condition,
     });
 

@@ -42,3 +42,9 @@ export interface PostDetailResponse {
   createAt: string;
   tags: string[];
 }
+
+export interface PostNavigationResponse {
+  postId: number;
+  title: string;
+  seriesOrder: number;
+}
