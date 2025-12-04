@@ -1,11 +1,13 @@
 import { Button, Pagination } from "flowbite-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { HiPencil } from "react-icons/hi";
+import { HiListBullet } from "react-icons/hi2";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPosts, getPostsCount } from "../api/PostApi";
 import { getTags } from "../api/TagApi";
 import CategoryCard from "../components/ui/CategoryCard";
 import PostCard from "../components/ui/PostCard";
+import SeriesManageModal from "../components/ui/SeriesManageModal";
 import TagCard from "../components/ui/TagCard";
 import { useAuth } from "../hooks/useAuth";
 import type { PostListResponse, PostSearchCondition } from "../types/Post";
@@ -20,6 +22,7 @@ const PostListPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParam] = useSearchParams();
+  const [isSeriesModalOpen, setIsSeriesModalOpen] = useState(false);
 
   const currentCondition: PostSearchCondition = useMemo(() => {
     return {
@@ -46,6 +49,7 @@ const PostListPage: React.FC = () => {
   const fetchPosts = async (cPage: number, condition: PostSearchCondition) => {
     try {
       const data = await getPosts(cPage - 1, condition);
+
       setPosts(data);
     } catch (err) {
       handleError(err);
@@ -84,6 +88,9 @@ const PostListPage: React.FC = () => {
     fetchPosts(page, currentCondition);
   };
 
+  const handleOpenModal = () => setIsSeriesModalOpen(true);
+  const handleCloseModal = () => setIsSeriesModalOpen(false);
+
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-8">
@@ -95,11 +102,20 @@ const PostListPage: React.FC = () => {
               {currentTitle}
             </h2>
             {isAuthenticated ? (
-              <Link to="write">
-                <Button>
-                  <HiPencil className="mr-2 h-4 w-4" />새 게시글 등록
+              <div className="flex gap-2">
+                <Button color="alternative" onClick={handleOpenModal}>
+                  <HiListBullet className="mr-2 h-4 w-4" />
+                  시리즈 관리
                 </Button>
-              </Link>
+                <Link to="write">
+                  <Button>
+                    <HiPencil className="mr-2 h-4 w-4" />새 게시글 등록
+                  </Button>
+                </Link>
+                {isSeriesModalOpen && (
+                  <SeriesManageModal onClose={handleCloseModal} />
+                )}
+              </div>
             ) : (
               <></>
             )}

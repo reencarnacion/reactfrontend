@@ -31,7 +31,7 @@ export const deleteSeries = async (seriesId: number): Promise<void> => {
 };
 
 // 목록조회
-export const fetchAllSeries = async (): Promise<SeriesResponse[]> => {
+export const getAllSeries = async (): Promise<SeriesResponse[]> => {
   try {
     const response = await apiClient.get<SeriesResponse[]>("/series", {});
 
@@ -43,7 +43,7 @@ export const fetchAllSeries = async (): Promise<SeriesResponse[]> => {
 };
 
 // 상세  + 관련게시글 목록조회
-export const fetchSeriesWithPosts = async (
+export const getSeriesWithPosts = async (
   seriesId: number
 ): Promise<SeriesDetailResponse> => {
   try {
