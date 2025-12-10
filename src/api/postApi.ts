@@ -1,5 +1,5 @@
 import type {
-  CreatePostRequest,
+  PostCreateRequest,
   PostDetailResponse,
   PostListResponse,
   PostResponse,
@@ -11,7 +11,7 @@ const POSTS_PER_PAGE = 8;
 
 // 게시글 생성
 export const createPost = async (
-  postData: CreatePostRequest
+  postData: PostCreateRequest
 ): Promise<PostResponse> => {
   try {
     // 인증 필요 요청에 헤더 토큰 추가

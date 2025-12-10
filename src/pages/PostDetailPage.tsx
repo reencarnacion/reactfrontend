@@ -12,8 +12,11 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { getPost } from "../api/PostApi";
+import { getSeriesWithPosts } from "../api/SeriesApi";
+import SeriesNavigator from "../components/ui/SeriesNavigator";
 import { useAuth } from "../hooks/useAuth";
 import type { PostDetailResponse } from "../types/Post";
+import type { SeriesDetailResponse } from "../types/Series";
 import { handleError } from "../utils/notifier";
 import { formatTimeAgo } from "../utils/time";
 
@@ -32,6 +35,9 @@ const PostDetailPage: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
   const [toc, setToc] = useState<TableOfContentsItem[]>([]);
+  const [seriesDetail, setSeriesDetail] = useState<SeriesDetailResponse | null>(
+    null
+  );
   const mainContentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -85,6 +91,19 @@ const PostDetailPage: React.FC = () => {
 
     setToc(tocItems);
 
+    // 시리즈 아이디 있을 경우 조회
+    if (post?.seriesId) {
+      const fetchSeriesDetail = async () => {
+        try {
+          const data = await getSeriesWithPosts(post.seriesId);
+          setSeriesDetail(data);
+        } catch (error) {
+          handleError(error);
+        }
+      };
+      fetchSeriesDetail();
+    }
+
     // 스크롤 이벤트
     const handleScroll = () => {
       const currentScrollPost = window.scrollY;
@@ -102,6 +121,9 @@ const PostDetailPage: React.FC = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [post]);
+
+  // 시리즈 조회 훅
+  // useEffect(() => {}, [seriesDetail]);
 
   const handleGoback = () => {
     navigate(-1);
@@ -123,7 +145,7 @@ const PostDetailPage: React.FC = () => {
 
   return (
     <div className="relative">
-      <div ref={mainContentRef} className="container mx-auto p-4">
+      <div ref={mainContentRef} className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
         {post ? (
           // 게시글 정상 조회 시 렌더링
           <div className="grid lg:grid-cols-4 gap-8">
@@ -233,38 +255,48 @@ const PostDetailPage: React.FC = () => {
                 </Card>
               ) : null}
 
-              <Card>
-                <h3 className="text-lg font-semibold mb-3">목차</h3>
-                <ul className="space-y-2 mt-2">
-                  {toc.map((item) => (
-                    <li key={item.id}>
-                      <a
-                        href={`#${item.id}`}
-                        className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block transition-colors hover:underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const target = document.getElementById(item.id);
+              {/* 목차 영역 */}
+              {toc.length != 0 && (
+                <Card>
+                  <h3 className="text-lg font-semibold mb-3">목차</h3>
+                  <ul className="space-y-2 mt-2">
+                    {toc.map((item) => (
+                      <li key={item.id}>
+                        <a
+                          href={`#${item.id}`}
+                          className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block transition-colors hover:underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const target = document.getElementById(item.id);
 
-                          if (target) {
-                            target.scrollIntoView({
-                              behavior: "smooth",
-                              block: "start",
-                            });
-                          }
-                        }}
-                      >
-                        <span className="font-semibold mr-1">{item.depth}</span>
-                        {item.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+                            if (target) {
+                              target.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start",
+                              });
+                            }
+                          }}
+                        >
+                          <span className="font-semibold mr-1">
+                            {item.depth}
+                          </span>
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
 
-              <Card>
-                <h3 className="text-lg font-semibold mb-3">시리즈 영역</h3>
-                <p>시리즈 기능은 현재 개발 중입니다.</p>
-              </Card>
+              {/* 시리즈 영역 */}
+              {post && post.seriesId && seriesDetail && (
+                <SeriesNavigator
+                  seriesTitle={seriesDetail.title}
+                  seriesPosts={seriesDetail.posts}
+                  currentPostId={post.postId}
+                  seriesDescription={seriesDetail.description}
+                />
+              )}
             </aside>
           </div>
         ) : (

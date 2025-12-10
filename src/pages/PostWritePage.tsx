@@ -8,10 +8,12 @@ import {
   TextInput,
   ToggleSwitch,
 } from "flowbite-react";
-import React, { useMemo, useState, type FormEvent } from "react";
+import React, { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import SimpleMdeEditor from "react-simplemde-editor";
 import { createPost } from "../api/PostApi";
+import { getAllSeries } from "../api/SeriesApi";
+import type { SeriesResponse } from "../types/Series";
 import { handleError, handleSuccess } from "../utils/notifier";
 
 // TODO: 이미지 업로드 함수 구현
@@ -22,7 +24,25 @@ const PostWritePage: React.FC = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  // 시리즈 숫자 컬럼은 null허용
+  const [seriesId, setSeriesId] = useState<number | null>(null);
+  const [seriesOrder, setSeriesOrder] = useState<number | null>(null);
+  const [allSeries, setAllSeries] = useState<SeriesResponse[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    //
+    const fetchAllSeries = async () => {
+      try {
+        const data = await getAllSeries();
+        setAllSeries(data);
+      } catch (err) {
+        handleError(err);
+      }
+    };
+
+    fetchAllSeries();
+  }, []);
 
   // 에디터 옵션
   const mdeOptions: Options = useMemo(() => {
@@ -67,6 +87,8 @@ const PostWritePage: React.FC = () => {
       category,
       isPrivate,
       tags: tags.split(","),
+      seriesId,
+      seriesOrder,
     };
 
     try {
@@ -146,6 +168,42 @@ const PostWritePage: React.FC = () => {
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-24 shrink-0">
+              <Label htmlFor="series-select">시리즈</Label>
+            </div>
+            <div className="flex-1">
+              <Select
+                id="series-select"
+                onChange={(e) => setSeriesId(Number(e.target.value))}
+                required={false}
+              >
+                <option value="">-- 선택 안 함 --</option>
+                {allSeries.map((series) => (
+                  <option key={series.seriesId} value={series.seriesId}>
+                    {series.title}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="w-24 shrink-0">
+              <Label htmlFor="series-order">시리즈 순서</Label>
+            </div>
+            <TextInput
+              id="series-order"
+              type="number"
+              min="1"
+              placeholder="시리즈 내 순서 (예: 1)"
+              value={seriesOrder ?? ""}
+              onChange={(e) => setSeriesOrder(Number(e.target.value))}
+              disabled={seriesId === null}
+            />
+          </div>
+        </div>
+
         <div className="flex items-center gap-4">
           <div className="w-30 shrink-0">
             <Label htmlFor="tags">태그 (쉼표로 구분)</Label>
@@ -170,7 +228,6 @@ const PostWritePage: React.FC = () => {
               value={content}
               onChange={handleContentChange}
               options={mdeOptions}
-              // ⭐️ 다크 모드 스타일링을 위한 클래스 ⭐️
               className="markdown-editor-simplemde"
             />
           </div>

@@ -7,9 +7,21 @@ export interface Post {
 }
 
 // Post 요청 데이터 구조
-export interface CreatePostRequest {
+export interface PostCreateRequest {
   title: string;
   content: string;
+  category: string;
+  isPrivate: boolean;
+  tags: string[];
+  seriesId: number | null;
+  seriesOrder: number | null;
+}
+
+// Post 검색조건
+export interface PostSearchCondition {
+  tagName?: string;
+  category?: string;
+  keyword?: string;
 }
 
 // Post CUD 응답 데이터 구조
@@ -26,12 +38,9 @@ export interface PostListResponse {
   category: string;
   createAt: string;
   tags: string[];
-}
-
-export interface PostSearchCondition {
-  tagName?: string;
-  category?: string;
-  keyword?: string;
+  seriesId: number;
+  seriesTitle: string;
+  seriesOrder: number;
 }
 
 export interface PostDetailResponse {
@@ -41,6 +50,9 @@ export interface PostDetailResponse {
   category: string;
   createAt: string;
   tags: string[];
+  seriesId: number;
+  seriesTitle: string;
+  seriesOrder: number;
 }
 
 export interface PostNavigationResponse {
