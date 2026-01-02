@@ -11,6 +11,7 @@ import {
 import React, { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import SimpleMdeEditor from "react-simplemde-editor";
+import { uploadImage } from "../api/ImageApi";
 import { createPost } from "../api/PostApi";
 import { getAllSeries } from "../api/SeriesApi";
 import type { SeriesResponse } from "../types/Series";
@@ -31,7 +32,6 @@ const PostWritePage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    //
     const fetchAllSeries = async () => {
       try {
         const data = await getAllSeries();
@@ -58,6 +58,7 @@ const PostWritePage: React.FC = () => {
         "link",
         "image",
         "|",
+        "table",
         "unordered-list",
         "ordered-list",
         "quote",
@@ -66,10 +67,28 @@ const PostWritePage: React.FC = () => {
         "side-by-side",
         "fullscreen",
       ],
-      // ⭐️ readOnly를 여기서 false로 명시 ⭐️
       readOnly: false,
-      // 이미지를 위한 커스텀 함수 (다음 단계에서 완성)
-      // imageUploadFunction: uploadImageToServer,
+      // 이미지 처리 설정
+      uploadImage: true,
+      imageAccept: "image/*",
+      imageUploadText: "이미지 업로드 중...",
+      imageErrorText: "이미지 업로드 실패",
+      imageUploadFunction: async (
+        file: File,
+        onSuccess: (url: string) => void,
+        onError: (error: string) => void
+      ) => {
+        try {
+          const imageUrl = await uploadImage(file);
+
+          onSuccess(imageUrl);
+        } catch (err) {
+          console.error("업로드 에러:", err);
+          onError("이미지 업로드에 실패했습니다.");
+
+          handleError(err);
+        }
+      },
     };
   }, []);
 

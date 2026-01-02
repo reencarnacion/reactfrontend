@@ -13,6 +13,11 @@ export default defineConfig({
         changeOrigin: true, // 호스트 헤더 변경
         secure: false,
       },
+      "/files": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
