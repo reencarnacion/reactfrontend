@@ -57,3 +57,21 @@ h6 {
 .dark .CodeMirror-cursor {
   border-left-color: #ffffff !important; /* 커서 색상을 흰색으로 변경 */
 }
+
+/* 마크다운 상세 스타일 */
+.prose img {
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.prose table {
+  max-width: 800px;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}

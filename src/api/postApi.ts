@@ -4,6 +4,7 @@ import type {
   PostListResponse,
   PostResponse,
   PostSearchCondition,
+  PostUpdateRequest,
 } from "../types/Post";
 import apiClient from "./ApiClient";
 
@@ -74,5 +75,30 @@ export const getPostsCount = async (
   } catch (error) {
     console.error("게시글 총 건수 조회 실패: ", error);
     throw new Error("데이터를 불러오지 못했습니다.");
+  }
+};
+
+// 게시글 수정
+export const updatePost = async (
+  postData: PostUpdateRequest,
+  postId: number
+): Promise<PostResponse> => {
+  try {
+    const response = await apiClient.put(`/posts/${postId}`, postData);
+
+    return response.data;
+  } catch (error) {
+    console.error("게시글 생성 실패: ", error);
+    throw new Error("게시글 등록에 실패했습니다.");
+  }
+};
+
+// 게시글 삭제
+export const deletePost = async (postId: number): Promise<void> => {
+  try {
+    await apiClient.delete(`/posts/${postId}`);
+  } catch (error) {
+    console.error("게시글 삭제 실패: ", error);
+    throw new Error("게시글 삭제에 실패했습니다.");
   }
 };

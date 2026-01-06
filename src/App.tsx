@@ -21,7 +21,7 @@ function App() {
               {/* Routes 내에서 특정 URL 경로에 컴포넌트 매핑 */}
               <Route path="/" element={<HomePage />} />
               <Route path="/posts" element={<PostList />} />
-              <Route path="/posts/write" element={<PostWritePage />} />
+              <Route path="/posts/write/:postId" element={<PostWritePage />} />
               <Route path="/posts/:postId" element={<PostDetailPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />

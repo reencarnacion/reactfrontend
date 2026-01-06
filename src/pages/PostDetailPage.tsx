@@ -1,5 +1,5 @@
 import { Badge, Button, Card } from "flowbite-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   HiArrowDown,
   HiArrowUp,
@@ -11,13 +11,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import { getPost } from "../api/PostApi";
+import { deletePost, getPost } from "../api/PostApi";
 import { getSeriesWithPosts } from "../api/SeriesApi";
 import SeriesNavigator from "../components/ui/SeriesNavigator";
 import { useAuth } from "../hooks/useAuth";
 import type { PostDetailResponse } from "../types/Post";
 import type { SeriesDetailResponse } from "../types/Series";
-import { handleError } from "../utils/notifier";
+import { handleError, handleSuccess } from "../utils/notifier";
 import { formatTimeAgo } from "../utils/time";
 
 interface TableOfContentsItem {
@@ -143,6 +143,29 @@ const PostDetailPage: React.FC = () => {
     window.scrollTo({ top: targetY, behavior: "smooth" });
   };
 
+  const handleModify = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (window.confirm("이 게시글을 수정하시겠습니까?")) {
+      navigate(`/posts/write/${postIdNumber}`);
+    }
+  };
+
+  const handleDelete = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      try {
+        await deletePost(postIdNumber!);
+
+        handleSuccess("게시글이 성공적으로 삭제되었습니다.");
+        navigate("/posts");
+      } catch (error) {
+        handleError(error);
+      }
+    }
+  };
+
   return (
     <div className="relative">
       <div ref={mainContentRef} className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
@@ -227,27 +250,11 @@ const PostDetailPage: React.FC = () => {
                     게시글 관리
                   </h6>
                   <div className="flex flex-row gap-2">
-                    <Button
-                      color="blue"
-                      size="sm"
-                      onClick={() => {
-                        console.log("수정 페이지로 이동 개발중..");
-                      }}
-                    >
+                    <Button color="blue" size="sm" onClick={handleModify}>
                       <HiOutlinePencil className="mr-2 h-5 w-5" />
                       수정
                     </Button>
-                    <Button
-                      color="red"
-                      size="sm"
-                      onClick={() => {
-                        if (
-                          window.confirm("정말로 이 게시글을 삭제하시겠습니까?")
-                        ) {
-                          console.log("삭제 기능 개발중..");
-                        }
-                      }}
-                    >
+                    <Button color="red" size="sm" onClick={handleDelete}>
                       <HiOutlineTrash className="mr-2 h-5 w-5" />
                       삭제
                     </Button>

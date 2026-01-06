@@ -36,6 +36,7 @@ export interface PostListResponse {
   title: string;
   content: string;
   category: string;
+  isPrivate: boolean;
   createAt: string;
   tags: string[];
   seriesId: number;
@@ -48,6 +49,7 @@ export interface PostDetailResponse {
   title: string;
   content: string;
   category: string;
+  isPrivate: boolean;
   createAt: string;
   tags: string[];
   seriesId: number;
@@ -59,4 +61,14 @@ export interface PostNavigationResponse {
   postId: number;
   title: string;
   seriesOrder: number;
+}
+
+export interface PostUpdateRequest {
+  title: string;
+  content: string;
+  category: string;
+  isPrivate: boolean;
+  tags: string[];
+  seriesId: number | null;
+  seriesOrder: number | null;
 }

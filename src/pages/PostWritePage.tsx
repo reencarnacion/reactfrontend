@@ -9,29 +9,29 @@ import {
   ToggleSwitch,
 } from "flowbite-react";
 import React, { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SimpleMdeEditor from "react-simplemde-editor";
 import { uploadImage } from "../api/ImageApi";
-import { createPost } from "../api/PostApi";
+import { createPost, getPost, updatePost } from "../api/PostApi";
 import { getAllSeries } from "../api/SeriesApi";
 import type { SeriesResponse } from "../types/Series";
 import { handleError, handleSuccess } from "../utils/notifier";
 
-// TODO: 이미지 업로드 함수 구현
-
 const PostWritePage: React.FC = () => {
+  const { postId } = useParams<{ postId: string }>();
+  const isEditMode = Boolean(postId);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("개발");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
-  // 시리즈 숫자 컬럼은 null허용
   const [seriesId, setSeriesId] = useState<number | null>(null);
   const [seriesOrder, setSeriesOrder] = useState<number | null>(null);
   const [allSeries, setAllSeries] = useState<SeriesResponse[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 시리즈 목록
     const fetchAllSeries = async () => {
       try {
         const data = await getAllSeries();
@@ -42,7 +42,29 @@ const PostWritePage: React.FC = () => {
     };
 
     fetchAllSeries();
-  }, []);
+
+    // 수정 모드인지
+    if (isEditMode) {
+      const fetchPost = async () => {
+        try {
+          const id = parseInt(postId as string, 10);
+          const data = await getPost(id);
+
+          setTitle(data.title);
+          setContent(data.content);
+          setCategory(data.category);
+          setTags(data.tags.join(", "));
+          setIsPrivate(data.isPrivate);
+          setSeriesId(data.seriesId);
+          setSeriesOrder(data.seriesOrder);
+        } catch (error) {
+          handleError(error);
+        }
+      };
+
+      fetchPost();
+    }
+  }, [isEditMode, postId]);
 
   // 에디터 옵션
   const mdeOptions: Options = useMemo(() => {
@@ -50,7 +72,6 @@ const PostWritePage: React.FC = () => {
       spellChecker: false,
       status: false,
       minHeight: "180px",
-      // 툴바 설정 (image 버튼 포함)
       toolbar: [
         "heading",
         "bold",
@@ -68,7 +89,6 @@ const PostWritePage: React.FC = () => {
         "fullscreen",
       ],
       readOnly: false,
-      // 이미지 처리 설정
       uploadImage: true,
       imageAccept: "image/*",
       imageUploadText: "이미지 업로드 중...",
@@ -100,7 +120,7 @@ const PostWritePage: React.FC = () => {
     e.preventDefault();
 
     // 게시글 서버 전송 로직
-    const newPost = {
+    const savePost = {
       title,
       content,
       category,
@@ -111,9 +131,15 @@ const PostWritePage: React.FC = () => {
     };
 
     try {
-      const createdPost = await createPost(newPost);
+      let savedPost;
 
-      handleSuccess(`게시글 작성완료 [${createdPost.postId}]`, () =>
+      if (isEditMode) {
+        savedPost = await updatePost(savePost, Number(postId));
+      } else {
+        savedPost = await createPost(savePost);
+      }
+
+      handleSuccess(`게시글 작성완료 [${savedPost.postId}]`, () =>
         navigate("/posts")
       );
     } catch (err) {
