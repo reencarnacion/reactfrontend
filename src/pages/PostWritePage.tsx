@@ -18,8 +18,11 @@ import type { SeriesResponse } from "../types/Series";
 import { handleError, handleSuccess } from "../utils/notifier";
 
 const PostWritePage: React.FC = () => {
-  const { postId } = useParams<{ postId: string }>();
-  const isEditMode = Boolean(postId);
+  const { postId } = useParams<{ postId?: string }>();
+  const isEditMode = useMemo(() => {
+    const id = Number(postId);
+    return !!postId && !isNaN(id) && id > 0;
+  }, [postId]);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("개발");
   const [content, setContent] = useState("");
@@ -44,11 +47,10 @@ const PostWritePage: React.FC = () => {
     fetchAllSeries();
 
     // 수정 모드인지
-    if (isEditMode) {
+    if (isEditMode && postId) {
       const fetchPost = async () => {
         try {
-          const id = parseInt(postId as string, 10);
-          const data = await getPost(id);
+          const data = await getPost(Number(postId));
 
           setTitle(data.title);
           setContent(data.content);
@@ -89,6 +91,10 @@ const PostWritePage: React.FC = () => {
         "fullscreen",
       ],
       readOnly: false,
+      placeholder: "여기에 내용을 작성하세요...",
+      autofocus: true,
+      sideBySideFullscreen: false,
+      syncSideBySidePreviewScroll: true,
       uploadImage: true,
       imageAccept: "image/*",
       imageUploadText: "이미지 업로드 중...",
