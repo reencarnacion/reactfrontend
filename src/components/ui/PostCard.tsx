@@ -7,6 +7,18 @@ interface PostCardProps {
   post: PostListResponse;
 }
 
+const stripMarkdown = (content: string): string => {
+  return content
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`(.+?)`/g, "$1")
+    .replace(/[#*`>_-]/g, "")
+    .replace(/[|:-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
     <div className="bg-transparent shadow-none border-0">
@@ -40,7 +52,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       </Link>
 
       <p className="text-base font-normal tracking-tight text-gray-700 dark:text-gray-400 line-clamp-1">
-        {post.content}
+        {stripMarkdown(post.content)}
       </p>
 
       <hr className="mt-4 border-gray-200 dark:border-gray-700" />
