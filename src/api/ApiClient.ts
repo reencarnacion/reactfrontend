@@ -6,7 +6,7 @@ import { refreshAccessToken } from "./AuthApi";
 const MAX_RETRY_COUNT = 1;
 
 const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api` || "/api",
   headers: {
     "Content-Type": "application/json",
   },
