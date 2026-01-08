@@ -43,7 +43,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="flex items-center gap-4">
             {/* 제목/로고 영역 */}
             <Link to="/">
-              <NavbarBrand className="gap-2">
+              <NavbarBrand as="div" className="gap-2">
                 <HiHome className="h-6 w-6" />
                 <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
                   SWLog
@@ -66,10 +66,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   to="/posts"
                   className="border-r border-gray-300 pr-4 dark:border-gray-600"
                 >
-                  <NavbarLink>게시판</NavbarLink>
+                  <NavbarLink as="div">게시판</NavbarLink>
                 </Link>
                 <Link to="/about">
-                  <NavbarLink>소개</NavbarLink>
+                  <NavbarLink as="div">소개</NavbarLink>
                 </Link>
               </div>
             </NavbarCollapse>
