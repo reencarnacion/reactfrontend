@@ -21,18 +21,8 @@ export const login = async (
   }
 };
 
-export const refreshAccessToken = async (): Promise<TokenResponse> => {
-  const refreshToken = localStorage.getItem("refreshToken");
-
-  if (!refreshToken) {
-    throw new Error("Refresh token을 찾을 수 없습니다.");
-  }
-
-  const response = await apiClient.post<TokenResponse>("/auth/refresh", {
-    refreshToken,
-  });
+export const refreshAccessToken = async () => {
+  const response = await apiClient.post<TokenResponse>("/auth/refresh");
 
   localStorage.setItem("accessToken", response.data.accessToken);
-
-  return response.data;
 };

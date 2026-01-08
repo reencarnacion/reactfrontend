@@ -13,14 +13,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const login = useCallback((authData: TokenResponse) => {
     localStorage.setItem("accessToken", authData.accessToken);
-    localStorage.setItem("refreshToken", authData.refreshToken);
 
     setIsAuthenticated(true);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
 
     setIsAuthenticated(false);
   }, []);

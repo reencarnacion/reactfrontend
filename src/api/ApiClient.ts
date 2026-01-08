@@ -10,6 +10,7 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // 요청 인터셉터 등록
@@ -42,13 +43,10 @@ apiClient.interceptors.response.use(
       _retryCount?: number;
     };
 
-    const refreshToken = localStorage.getItem("refreshToken");
-
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      (originalRequest._retryCount || 0) < MAX_RETRY_COUNT &&
-      refreshToken
+      (originalRequest._retryCount || 0) < MAX_RETRY_COUNT
     ) {
       // 401 - 토큰 리프레쉬
       originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
