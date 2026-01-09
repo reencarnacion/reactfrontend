@@ -1,5 +1,5 @@
 import { Card, FooterIcon } from "flowbite-react";
-import { FaDiscord, FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaEnvelope, FaGithub } from "react-icons/fa";
 import ProfileIcon from "../assets/me.jpg";
 
 const AboutPage: React.FC = () => {
@@ -50,16 +50,13 @@ const AboutPage: React.FC = () => {
         </div>
 
         <section className="w-full text-center py-4">
-          <h2 className="text-xl font-bold mb-3">연락처</h2>
           <div className="flex justify-center space-x-4">
             <FooterIcon href="#" icon={FaGithub} className="text-2xl" />
-            <FooterIcon href="#" icon={FaLinkedin} className="text-2xl" />
             <FooterIcon
               href="mailto:thearch90@gmail.com"
               icon={FaEnvelope}
               className="text-2xl"
             />
-            <FooterIcon href="#" icon={FaDiscord} className="text-2xl" />
           </div>
         </section>
       </div>

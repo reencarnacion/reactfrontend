@@ -13,8 +13,7 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import React from "react";
-import { FaEnvelope, FaInstagram } from "react-icons/fa";
-import { FaBluesky, FaX } from "react-icons/fa6";
+import { FaEnvelope } from "react-icons/fa";
 import { HiHome, HiUserCircle } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
@@ -128,15 +127,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
             <FooterCopyright href="#" by="SW" year={2025} />
             <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
-              <FooterIcon
-                href="https://www.instagram.com/reincarnated90/"
-                icon={FaInstagram}
-              />
-              <FooterIcon href="https://x.com/Reincarnate90" icon={FaX} />
-              <FooterIcon
-                href="https://bsky.app/profile/reencarnacion.bsky.social"
-                icon={FaBluesky}
-              />
               <FooterIcon href="mailto:thearch90@gmail.com" icon={FaEnvelope} />
             </div>
           </div>
