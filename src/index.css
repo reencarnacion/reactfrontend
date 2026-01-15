@@ -60,7 +60,8 @@ h6 {
 
 /* 마크다운 상세 스타일 */
 .prose img {
-  max-height: 300px;
+  max-height: 800px;
+  max-width: 100%;
   width: auto;
   height: auto;
   border-radius: 8px;
@@ -68,6 +69,7 @@ h6 {
   margin: 20px auto;
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  clear: both;
 }
 
 .prose table {
@@ -88,13 +90,16 @@ h6 {
 /* 2. 이미지 스타일 (상세페이지 .prose img와 동기화) */
 .markdown-editor-simplemde .editor-preview-side img,
 .markdown-editor-simplemde .editor-preview img {
-  max-height: 300px; /* 기존 상세페이지 설정 유지 */
+  max-height: 800px;
+  max-width: 100%;
   width: auto;
   height: auto;
   border-radius: 8px;
   display: block;
   margin: 20px auto;
+  border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  clear: both;
 }
 
 /* 3. 표(Table) 스타일 보정 (스크린샷 문제 해결) */
