@@ -1,6 +1,6 @@
 import { Card, ListGroup, ListGroupItem, Tooltip } from "flowbite-react";
 import type React from "react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { HiInformationCircle } from "react-icons/hi";
 
 interface SeriesPostItem {
@@ -23,15 +23,6 @@ const SeriesNavigator: React.FC<SeriesNavigatorProps> = ({
   seriesDescription,
 }) => {
   const currentItemRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (currentItemRef.current) {
-      currentItemRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [seriesPosts, currentPostId]);
 
   return (
     <Card>
