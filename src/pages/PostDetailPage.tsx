@@ -8,6 +8,8 @@ import {
 } from "react-icons/hi";
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
@@ -36,7 +38,7 @@ const PostDetailPage: React.FC = () => {
   const [showScrollBottom, setShowScrollBottom] = useState(false);
   const [toc, setToc] = useState<TableOfContentsItem[]>([]);
   const [seriesDetail, setSeriesDetail] = useState<SeriesDetailResponse | null>(
-    null
+    null,
   );
   const mainContentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -63,7 +65,7 @@ const PostDetailPage: React.FC = () => {
   useEffect(() => {
     // 본문 제목 태그 목차 생성
     const headings = document.querySelectorAll<HTMLHeadingElement>(
-      ".prose h2, .prose h3, .prose h4, .prose h5, .prose h6"
+      ".prose h2, .prose h3, .prose h4, .prose h5, .prose h6",
     );
     const tocItems: TableOfContentsItem[] = [];
     const sectionNumbers: number[] = [0, 0, 0, 0, 0];
@@ -171,7 +173,7 @@ const PostDetailPage: React.FC = () => {
       <div ref={mainContentRef} className="mx-auto px-4 py-10 sm:px-6 lg:px-8">
         {post ? (
           // 게시글 정상 조회 시 렌더링
-          <div className="grid lg:grid-cols-4 gap-8">
+          <div className="grid lg:grid-cols-4 gap-8 items-start">
             <div className="lg:col-span-3">
               <Button
                 color="light"
@@ -182,7 +184,6 @@ const PostDetailPage: React.FC = () => {
                 이전 화면으로
               </Button>
               {/* 포스트 제목 및 메타데이터 영역 */}
-              {/* TODO: 목록으로, 맨 위로, 아래로 등의 편의 버튼 */}
               <header className="mb-6 pb-4 dark:bg-gray-800 bg-gray-200 p-4 rounded-lg">
                 <div className="flex flex-wrap gap-2 mb-2">
                   <Badge
@@ -220,8 +221,29 @@ const PostDetailPage: React.FC = () => {
                   ]}
                   components={{
                     code({ className, children, ...props }) {
-                      return (
-                        <code className={className} {...props}>
+                      const match = /language-(\w+)/.exec(className || "");
+                      const isCodeBlock = !!match;
+
+                      return isCodeBlock ? (
+                        <SyntaxHighlighter
+                          language={match[1]}
+                          style={vscDarkPlus}
+                          PreTag="div"
+                          customStyle={{
+                            fontSize: "1rem",
+                            lineHeight: "1.5",
+                            borderRadius: "0.5rem",
+                            margin: "1.5rem 0",
+                            backgroundColor: "#1e1e1e",
+                          }}
+                        >
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code
+                          className="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-semibold text-red-500 dark:text-red-400"
+                          {...props}
+                        >
                           {children}
                         </code>
                       );
@@ -242,68 +264,84 @@ const PostDetailPage: React.FC = () => {
               </footer>
             </div>
 
-            <aside className="lg:col-span-1 flex flex-col gap-4">
-              {/* 게시글 관리 영역 */}
-              {isAuthenticated ? (
-                <Card>
-                  <h6 className="text-lg font-bold tracking-normal text-gray-900 dark:text-white">
-                    게시글 관리
-                  </h6>
-                  <div className="flex flex-row gap-2">
-                    <Button color="blue" size="sm" onClick={handleModify}>
-                      <HiOutlinePencil className="mr-2 h-5 w-5" />
-                      수정
-                    </Button>
-                    <Button color="red" size="sm" onClick={handleDelete}>
-                      <HiOutlineTrash className="mr-2 h-5 w-5" />
-                      삭제
-                    </Button>
-                  </div>
-                </Card>
-              ) : null}
+            <aside className="lg:col-span-1">
+              <div className="sticky top-6 flex flex-col gap-4">
+                {/* 게시글 관리 영역 */}
+                {isAuthenticated ? (
+                  <Card>
+                    <h6 className="text-lg font-bold tracking-normal text-gray-900 dark:text-white">
+                      게시글 관리
+                    </h6>
+                    <div className="flex flex-row gap-2">
+                      <Button color="blue" size="sm" onClick={handleModify}>
+                        <HiOutlinePencil className="mr-2 h-5 w-5" />
+                        수정
+                      </Button>
+                      <Button color="red" size="sm" onClick={handleDelete}>
+                        <HiOutlineTrash className="mr-2 h-5 w-5" />
+                        삭제
+                      </Button>
+                    </div>
+                  </Card>
+                ) : null}
 
-              {/* 목차 영역 */}
-              {toc.length != 0 && (
-                <Card>
-                  <h3 className="text-lg font-semibold mb-3">목차</h3>
-                  <ul className="space-y-2 mt-2">
-                    {toc.map((item) => (
-                      <li key={item.id}>
-                        <a
-                          href={`#${item.id}`}
-                          className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block transition-colors hover:underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const target = document.getElementById(item.id);
+                {/* 목차 영역 */}
+                {toc.length != 0 && (
+                  <Card>
+                    <h3 className="text-lg font-semibold mb-3">목차</h3>
+                    <ul className="space-y-2 mt-2">
+                      {toc.map((item) => {
+                        const getStyleByLevel = (level: number) => {
+                          switch (level) {
+                            case 2:
+                              return "text-[0.95rem] font-bold ml-0";
+                            case 3:
+                              return "text-[0.85rem] font-medium ml-3";
+                            case 4:
+                              return "text-[0.8rem] text-gray-500 ml-6";
+                            default:
+                              return "text-[0.75rem] text-gray-400 ml-9";
+                          }
+                        };
 
-                            if (target) {
-                              target.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start",
-                              });
-                            }
-                          }}
-                        >
-                          <span className="font-semibold mr-1">
-                            {item.depth}
-                          </span>
-                          {item.text}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              )}
+                        return (
+                          <li key={item.id} className="leading-tight">
+                            <a
+                              href={`#${item.id}`}
+                              className={`${getStyleByLevel(item.level)} block transition-colors hover:text-blue-600 dark:hover:text-blue-400 hover:underline`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const target = document.getElementById(item.id);
+                                if (target) {
+                                  target.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start",
+                                  });
+                                }
+                              }}
+                            >
+                              <span className="opacity-70 mr-1.5 font-mono text-[0.8em]">
+                                {item.depth}
+                              </span>
+                              {item.text}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </Card>
+                )}
 
-              {/* 시리즈 영역 */}
-              {post && post.seriesId && seriesDetail && (
-                <SeriesNavigator
-                  seriesTitle={seriesDetail.title}
-                  seriesPosts={seriesDetail.posts}
-                  currentPostId={post.postId}
-                  seriesDescription={seriesDetail.description}
-                />
-              )}
+                {/* 시리즈 영역 */}
+                {post && post.seriesId && seriesDetail && (
+                  <SeriesNavigator
+                    seriesTitle={seriesDetail.title}
+                    seriesPosts={seriesDetail.posts}
+                    currentPostId={post.postId}
+                    seriesDescription={seriesDetail.description}
+                  />
+                )}
+              </div>
             </aside>
           </div>
         ) : (
