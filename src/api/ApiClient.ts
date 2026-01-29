@@ -6,7 +6,7 @@ import { refreshAccessToken } from "./AuthApi";
 const MAX_RETRY_COUNT = 1;
 
 const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_API_BASE_URL}` || "/api",
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}` + "/api" || "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
   async (error: AxiosError) => {
     // 실패
     return Promise.reject(error);
-  }
+  },
 );
 
 // 응답 인터셉터
@@ -56,7 +56,7 @@ apiClient.interceptors.response.use(
 
         originalRequest.headers ||= {}; // 정의되지 않은 경우 빈 객체로 초기화
         originalRequest.headers.Authorization = `Bearer ${localStorage.getItem(
-          "accessToken"
+          "accessToken",
         )}`;
 
         return apiClient(originalRequest);
@@ -75,7 +75,7 @@ apiClient.interceptors.response.use(
       }
 
       const standardizedError: StandardizeError = new Error(
-        problemDetail.detail || `API 요청 실패 (Status: ${status})`
+        problemDetail.detail || `API 요청 실패 (Status: ${status})`,
       ) as StandardizeError;
 
       standardizedError.status = status;
@@ -85,11 +85,11 @@ apiClient.interceptors.response.use(
       return Promise.reject(standardizedError);
     } else {
       const networkError: Error = new Error(
-        "네트워크 연결 또는 요청에 실패했습니다."
+        "네트워크 연결 또는 요청에 실패했습니다.",
       );
       return Promise.reject(networkError);
     }
-  }
+  },
 );
 
 export default apiClient;
