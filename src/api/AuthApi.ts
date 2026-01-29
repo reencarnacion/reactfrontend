@@ -1,16 +1,15 @@
 import axios from "axios";
 import type { LoginRequest, TokenResponse } from "../types/Auth";
-import apiClient from "./ApiClient";
 
 const BASE_PATH = "/api/auth";
 
 export const login = async (
-  credentials: LoginRequest
+  credentials: LoginRequest,
 ): Promise<TokenResponse> => {
   try {
     const response = await axios.post<TokenResponse>(
-      `${BASE_PATH}/login`,
-      credentials
+      `${import.meta.env.VITE_API_BASE_URL}${BASE_PATH}/login`,
+      credentials,
     );
     return response.data;
   } catch (error) {
@@ -22,7 +21,11 @@ export const login = async (
 };
 
 export const refreshAccessToken = async () => {
-  const response = await apiClient.post<TokenResponse>("/auth/refresh");
+  const response = await axios.post<TokenResponse>(
+    `${import.meta.env.VITE_API_BASE_URL}${BASE_PATH}/refresh`,
+    {},
+    { withCredentials: true },
+  );
 
   localStorage.setItem("accessToken", response.data.accessToken);
 };
