@@ -24,10 +24,10 @@ const AboutPage: React.FC = () => {
               className="rounded-full w-32 h-32 mx-auto mb-6 object-cover shadow-lg"
             />
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
-              김성웅 (SW)
+              reencarnation AKA r11n (김성웅)
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              배우기 좋아함
+              배워가는 걸 좋아하는 사람입니다.
             </p>
           </section>
 
@@ -51,7 +51,11 @@ const AboutPage: React.FC = () => {
 
         <section className="w-full text-center py-4">
           <div className="flex justify-center space-x-4">
-            <FooterIcon href="#" icon={FaGithub} className="text-2xl" />
+            <FooterIcon
+              href="https://github.com/r11n-io"
+              icon={FaGithub}
+              className="text-2xl"
+            />
             <FooterIcon
               href="mailto:thearch90@gmail.com"
               icon={FaEnvelope}

@@ -13,7 +13,7 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import React from "react";
-import { FaEnvelope } from "react-icons/fa";
+import { FaEnvelope, FaGithub } from "react-icons/fa";
 import { HiHome, HiUserCircle } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
@@ -45,7 +45,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <NavbarBrand as="div" className="gap-2">
                 <HiHome className="h-6 w-6" />
                 <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                  SWLog
+                  r11n.io
                 </span>
               </NavbarBrand>
             </Link>
@@ -128,6 +128,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <FooterCopyright href="#" by="SW" year={2025} />
             <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
               <FooterIcon href="mailto:thearch90@gmail.com" icon={FaEnvelope} />
+              <FooterIcon href="https://github.com/r11n-io" icon={FaGithub} />
             </div>
           </div>
         </div>
