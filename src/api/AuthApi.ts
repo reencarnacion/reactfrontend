@@ -10,6 +10,7 @@ export const login = async (
     const response = await axios.post<TokenResponse>(
       `${import.meta.env.VITE_API_BASE_URL}${BASE_PATH}/login`,
       credentials,
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
